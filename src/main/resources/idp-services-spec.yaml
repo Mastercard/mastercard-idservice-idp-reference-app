@@ -1,0 +1,369 @@
+openapi: 3.0.3
+info:
+  version: '1.0'
+  title:  Mastercard Id For Identity Providers API
+  description: >-
+    ID for Identity Providers offers operational service to allow the secure storage and transmission of Digital Identity data from the user to the Relying Party having been verified to a required level of assurance by an Identity Verification Provider.
+  contact:
+    name: API Support
+    url: 'https://developer.mastercard.com/support'
+    email: apisupport@mastercard.com
+servers:
+  - url: 'https://api.mastercard.com.au/idservice-idp'
+    description: Production server (uses live data).
+  - url: 'https://sandbox.api.mastercard.com.au/idservice-idp'
+    description: Sandbox server (testing environment).
+tags:
+  - name: IDP Scopes Request
+    description: IDP RP claim sharing related operations.
+  - name: IDP Scopes Fulfillment
+    description: Claims sharing related to RP request scopes.
+paths:
+  '/scopes/{arid}':
+    get:
+      summary: >-
+        To retrieve the scopes and RP details associated with the arid. The
+        ARID must be in PENDING status.
+      tags:
+        - IDP Scopes Request
+      responses:
+        '200':
+          $ref: '#/components/responses/RPScopesSuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      description: |
+        To retrieve the requested scopes and RP details associated with the ARID.\
+        **This API is mandatory.**
+      operationId: retrieveRPScopes
+      parameters:
+        - $ref: '#/components/parameters/AridParameter'
+  '/scope-fulfillments/{arid}':
+    put:
+      parameters:
+        - $ref: '#/components/parameters/AridParameter'
+        - $ref: '#/components/parameters/XEncryptedPayload'
+      tags:
+        - IDP Scopes Fulfillment
+      responses:
+        '200':
+          $ref: '#/components/responses/ScopeFulfillmentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      description: |
+        Process claims data  provided by the IDP for the corresponding RP authentication.
+        Request scopes and update the authentication request.\
+         **This API is mandatory.**
+      summary: >-
+        To process the IDP claims and update the authentication request with the claims data. The Relying
+        party can get these claims data via RP claim sharing endpoint.
+      operationId: ProcessClaimsRequestedScopes
+      requestBody:
+        $ref: '#/components/requestBodies/ScopeFulfillmentRequest'
+components:
+  requestBodies:
+    ScopeFulfillmentRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IDPScopesAuthorization'
+      required: true
+  parameters:
+    AridParameter:
+      name: arid
+      in: path
+      description: UUID represents the ARID.
+      example: df52649e-4096-456a-bca0-751ee470009f
+      required: true
+      schema:
+        maxLength: 36
+        minLength: 36
+        type: string
+        pattern: >-
+          ^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$
+    XEncryptedPayload:
+      in: header
+      name: X-Encrypted-Payload
+      example: true
+      description: |
+        Indicator that request is encrypted or to indicate that client is able to receive a encrypted response. If not set, payload will treated as plaintext.
+      schema:
+        type: boolean
+  responses:
+    RPScopesSuccessResponse:
+      description: Success request.
+      headers:
+        X-Transaction-ID:
+          schema:
+            type: string
+          description: A random 128-bit UUID represents the transaction.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RPScopes'
+    ScopeFulfillmentResponse:
+      description: Success request.
+      headers:
+        X-Transaction-ID:
+          schema:
+            type: string
+          description: A random 128-bit UUID represents the transaction.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IDPScopesAuthorizationData'
+    BadRequestError:
+      description: The server cannot process the request due to bad request. client should consider correcting the request before retrying again.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorWrapper'
+          examples:
+            BadRequestClaimsEmptyExample:
+              $ref: '#/components/examples/BadRequestClaimsEmptyExample'
+            BadRequestInvalidFormatExample:
+              $ref: '#/components/examples/BadRequestInvalidFormatExample'
+            BadRequestInvalidClaimsExample:
+              $ref: '#/components/examples/BadRequestInvalidClaimsExample'
+    UnauthorizedError:
+      description: Unauthorized request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorWrapper'
+          examples:
+            UnauthorizedExample:
+              $ref: '#/components/examples/UnauthorizedExample'
+    NotFoundError:
+      description: The target resource has not been found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorWrapper'
+          examples:
+            NotFoundExample:
+              $ref: '#/components/examples/NotFoundExample'
+  schemas:
+    RPScopes:
+      required:
+        - scopes
+        - rpName
+        - rpLogoUrl
+      type: object
+      properties:
+        scopes:
+          type: array
+          items:
+            type: string
+            example: 'name:0:365'
+            description: The list of scopes that have been requested.
+        rpName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: THISRP
+          description: RP Name
+          pattern: '^[a-zA-Z\s ,.''‘’-]{1,255}$'
+        rpLogoUrl:
+          type: string
+          pattern: >-
+            ^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$
+          description: The URL of the logo of the RP.
+          example: 'https://www.rpsite.com/logo.jpg'
+    IDPScopesAuthorization:
+      required:
+        - claims
+        - userConsent
+      type: object
+      properties:
+        claims:
+          description: Claims for RP requested scopes.
+          type: array
+          items:
+            $ref: '#/components/schemas/IDPClaim'
+          example:
+            - claim: 'address:0:250'
+              values:
+                - name: address
+                  value: 2102 North Square Blvd
+            - claim: 'govtId:0:100'
+              values:
+                - name: firstName
+                  value: abc
+                - name: lastName
+                  value: xyz
+                - name: dateOfBirth
+                  value: '1990-12-12'
+          minItems: 1
+        userConsent:
+          maxLength: 8
+          minLength: 6
+          enum:
+            - ACCEPT
+            - DECLINE
+            - REVOKE
+            - EXPIRE
+          type: string
+          example: ACCEPT
+          description: >-
+            Attribute used to signify the user consent. If consent is other than 'ACCEPT' redirect url will be provided
+            with the error details.
+        locale:
+          type: string
+          example: en-US
+          pattern: '^[a-z]{2}-[a-zA-Z]{2}$'
+          description: 'IETF BCP 47 Format E.g. "en-GB" (English - United Kingdom), "es-MX" (Spanish - Mexico). More information: Locale ID (LCID) as defined by Microsoft. Not required. The default value is "en-US".'
+        countryCode:
+          description: ISO-3166 Alpha-2 standard.
+          type: string
+          example: US
+          pattern: '^[a-zA-Z]{2}$'
+    IDPClaim:
+      required:
+        - claim
+        - values
+      type: object
+      properties:
+        claim:
+          maxLength: 255
+          minLength: 1
+          description: A unique claim name particular to a scope requested by the relying party.
+          type: string
+          example: 'address:0:250'
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/IDPIndividualClaim'
+          description: List of values particular to a scope requested by the relying party.
+          minItems: 1
+    IDPIndividualClaim:
+      required:
+        - name
+        - value
+      type: object
+      properties:
+        name:
+          maxLength: 255
+          minLength: 1
+          description: A single claim name.
+          type: string
+          example: 'address'
+        value:
+          maxLength: 255
+          minLength: 1
+          description: The claim value.
+          type: string
+          example: 2102 North Square Blvd.
+    IDPScopesAuthorizationData:
+      required:
+        - redirectUri
+      type: object
+      properties:
+        redirectUri:
+          description: URL where IDP would redirect authorization response to be consumed by relying party
+          type: string
+          pattern: >-
+            ^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$
+          example: 'http://rp.com/auth?code=xcxxzaas3&state=xccx234'
+    ApiErrorWrapper:
+      required:
+        - Errors
+      type: object
+      properties:
+        Errors:
+          $ref: '#/components/schemas/ApiErrors'
+    ApiErrors:
+      description: List of errors.
+      example:
+        $ref: '#/components/examples/NotFoundExample'
+      required:
+        - Error
+      type: object
+      properties:
+        Error:
+          $ref: '#/components/schemas/ApiErrorList'
+    ApiErrorList:
+      description: Error details.
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/ApiError'
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type: string
+          description: Source of where the error occured.
+          minLength: 3
+          maxLength: 50
+          example: mids
+        ReasonCode:
+          type: string
+          description: Code of the error.
+          minLength: 5
+          maxLength: 100
+          example: BAD_REQUEST
+        Description:
+          type: string
+          description: The cause of the error.
+          minLength: 10
+          maxLength: 250
+          example: Claims in the request are empty
+        Recoverable:
+          type: boolean
+          description: Indiciates if the error can be recovered from.
+          example: false
+        Details:
+          type: string
+          description: Contains information about the error.
+          minLength: 10
+          maxLength: 1000
+          example:  IOException Occured
+  examples:
+    BadRequestClaimsEmptyExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: BAD_REQUEST
+              Description: Claims in the request are empty.
+              Recoverable: false
+    BadRequestInvalidFormatExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: BAD_REQUEST
+              Description: Claims in the request are empty.
+              Recoverable: false
+              Details: Invalid Date format. Valid format expected is 'YYYY-MM-DD'
+    BadRequestInvalidClaimsExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: INVALID_CLAIMS
+              Description: Provided claims are invalid.
+              Recoverable: false
+              Details: Claims are invalid. System defined claims for a mandatory scope 'ageOver' can't be empty
+    UnauthorizedExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: UNAUTHORIZED_REQUEST
+              Description: Unauthorized request.
+              Recoverable: false
+    NotFoundExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: CLAIM_SHARING_ARID_DOES_NOT_EXIST
+              Description: ARID does not exist.
+              Recoverable: false
