@@ -5,7 +5,6 @@
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_mastercard-idservice-idp-reference&metric=coverage)](https://sonarcloud.io/dashboard?id=Mastercard_mastercard-idservice-idp-reference)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_mastercard-idservice-idp-reference&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=Mastercard_mastercard-idservice-idp-reference)
 
-
 ## Table of Contents
 - [Overview](#overview)
   * [Compatibility](#compatibility)
