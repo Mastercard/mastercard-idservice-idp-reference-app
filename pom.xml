@@ -28,6 +28,10 @@
         <sonar.organization>mastercard</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>Mastercard_mastercard-idservice-idp-reference</sonar.projectKey>
+        <sonar.coverage.exclusions>
+            **/com/mastercard/dis/mids/reference/config/*
+            **/com/mastercard/dis/mids/reference/interceptor/*
+        </sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
@@ -150,7 +154,10 @@
                 <configuration>
                     <excludes>
                         <exclude>
-                            com.mastercard.developer.example.*
+                            com.mastercard.dis.mids.reference.config.*
+                        </exclude>
+                        <exclude>
+                            com.mastercard.dis.mids.reference.interceptor.*
                         </exclude>
                     </excludes>
                 </configuration>
