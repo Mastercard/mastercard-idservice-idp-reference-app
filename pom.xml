@@ -27,9 +27,9 @@
         <javax-ws-version>2.1.1</javax-ws-version>
         <sonar.organization>mastercard</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>Mastercard_mastercard-idservice-idp-reference</sonar.projectKey>
+        <sonar.projectKey>Mastercard_mastercard-idservice-idp-reference-app</sonar.projectKey>
         <sonar.coverage.exclusions>
-            **/com/mastercard/dis/mids/reference/config/*
+            **/com/mastercard/dis/mids/reference/config/*,
             **/com/mastercard/dis/mids/reference/interceptor/*
         </sonar.coverage.exclusions>
     </properties>
