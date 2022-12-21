@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +74,6 @@ class EncryptionUtilsTest {
     @Test
     void Should_return_service_exception_when_cert_file_not_found() {
         String filePath = "cert_file_name_not_found_mock.cert";
-        String expectedMessage = filePath + " (The system cannot find the file specified)";
         Resource createdResource = new FileSystemResource(filePath);
 
         Exception exception = assertThrows(ServiceException.class, () -> {
@@ -81,6 +81,6 @@ class EncryptionUtilsTest {
         });
 
         assertNotNull(exception);
-        assertEquals(expectedMessage, exception.getMessage());
+        assertTrue(exception.getMessage().contains(filePath));
     }
 }
