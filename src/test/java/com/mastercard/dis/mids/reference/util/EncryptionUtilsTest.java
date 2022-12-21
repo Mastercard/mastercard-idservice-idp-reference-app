@@ -16,6 +16,8 @@ limitations under the License.
 
 package com.mastercard.dis.mids.reference.util;
 
+import com.mastercard.developer.encryption.JweConfigBuilder;
+import com.mastercard.developer.encryption.jwe.JweObject;
 import com.mastercard.dis.mids.reference.exception.ServiceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,16 +27,30 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.cert.Certificate;
+import java.security.interfaces.RSAPrivateKey;
+import java.util.Objects;
+import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EncryptionUtilsTest {
 
     @Mock
     File file;
+
+    @Mock
+    JweObject jweObject;
 
     @Test
     void testJweEncryptThrowsServiceException() {
@@ -52,5 +68,19 @@ class EncryptionUtilsTest {
 
         assertThatThrownBy(() -> EncryptionUtils.jweEncrypt("{\"dataKey\":\"dataValue\"}", createdResource, "encryptionCertificateFingerPrint"))
                 .isInstanceOf(ServiceException.class);
+    }
+
+    @Test
+    void Should_return_service_exception_when_cert_file_not_found() {
+        String filePath = "cert_file_name_not_found_mock.cert";
+        String expectedMessage = filePath + " (The system cannot find the file specified)";
+        Resource createdResource = new FileSystemResource(filePath);
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            EncryptionUtils.jweEncrypt("{\"dataKey\":\"dataValue\"}", createdResource, "encryptionCertificateFingerPrint");
+        });
+
+        assertNotNull(exception);
+        assertEquals(expectedMessage, exception.getMessage());
     }
 }

@@ -25,6 +25,7 @@
         <client-encryption-version>1.7.5</client-encryption-version>
         <openapi-generator.version>6.1.0</openapi-generator.version>
         <javax-ws-version>2.1.1</javax-ws-version>
+        <surefire.version>3.0.0-M7</surefire.version>
         <sonar.organization>mastercard</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>Mastercard_mastercard-idservice-idp-reference-app</sonar.projectKey>
@@ -116,7 +117,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>${surefire.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>**/integration/*.java</exclude>
