@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-//@ExtendWith(SystemExitExtension.class)
+@ExtendWith(SystemExitExtension.class)
 class IDPReferenceApplicationTest {
 
     Scanner scanner;
