@@ -23,7 +23,7 @@ import java.security.PrivateKey;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthenticationInterceptorTest {
+class AuthenticationInterceptorTest {
 
     @InjectMocks
     private  AuthenticationInterceptor authenticationInterceptor;
