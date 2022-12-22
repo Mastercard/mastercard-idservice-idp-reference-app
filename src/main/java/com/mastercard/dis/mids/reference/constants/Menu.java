@@ -25,6 +25,7 @@ public class Menu {
 
     public Menu() {
         menuMap = new LinkedHashMap<>();
+        menuMap.put("0", "0)   Exit");
         menuMap.put("1", "1)   RP Scopes");
         menuMap.put("2", "2)   Scope-fulfillments");
     }
