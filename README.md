@@ -1,4 +1,4 @@
-# Mastercard Id Service IDP Reference Implementation
+# ID for Identity Providers Reference Implementation
 
 [![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_mastercard-idservice-idp-reference-app&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Mastercard_mastercard-idservice-idp-reference-app)
@@ -39,7 +39,7 @@ For more information regarding the program refer to [Id Service](https://idservi
 
 ## Usage <a name="usage"></a>
 ### Prerequisites <a name="prerequisites"></a>
-* [Mastercard Developers Account](https://developer.mastercard.com/dashboard) with access to Mastercard ID Service API
+* [Mastercard Developers Account](https://developer.mastercard.com/dashboard) with access to ID for Identity Providers API
 * A text editor or IDE
 * [Spring Boot 2.2+](https://spring.io/projects/spring-boot)
 * [Apache Maven 3.3+](https://maven.apache.org/download.cgi)
@@ -47,7 +47,7 @@ For more information regarding the program refer to [Id Service](https://idservi
 
 ### Configuration <a name="configuration"></a>
 * Create an account at [Mastercard Developers](https://developer.mastercard.com/account/sign-up).  
-* Create a new project and add `Mastercard ID Service` API to your project.   
+* Create a new project and add `ID for Identity Providers` API to your project.   
 * Configure project and download all the keys. It will download multiple files.  
 * Select all `.p12` files, `.pem` file and copy it to `src/main/resources` in the project folder.
 * Open `${project.basedir}/src/main/resources/application.properties` and configure below parameters.
@@ -133,9 +133,9 @@ Now that you have all the dependencies you need, you can generate the sources. T
 Navigate to the test package and right click to  `Run All Tests`
 
 ### Use cases <a name="use-cases"></a>
-Main use cases in Mastercard Id Service Reference APIs are Personal Data Storage, SMS One Time Password, Email One Time Password, Document Verification, Initiate Authentications, Re-Authentication, Claims Sharing, Audit Events, User profiles                                                               
+Main use cases in ID for Identity Providers Reference APIs are Personal Data Storage, SMS One Time Password, Email One Time Password, Document Verification, Initiate Authentications, Re-Authentication, Claims Sharing, Audit Events, User profiles                                                               
 
-Below are the different APIs available in Mastercard Id Service IDP Reference application:
+Below are the different APIs available in ID for Identity Providers Reference application:
 
 
 ## API Reference <a name="api-reference"></a>
