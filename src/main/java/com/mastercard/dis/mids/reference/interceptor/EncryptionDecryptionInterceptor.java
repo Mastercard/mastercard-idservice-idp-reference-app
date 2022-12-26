@@ -43,25 +43,25 @@ import java.util.List;
 @Component
 public class EncryptionDecryptionInterceptor implements Interceptor {
 
-    @Value("${mastercard.api.encryption.certificateFile}")
+    @Value("${mastercard.api.encryption.certificateFile:#{null}}")
     private Resource encryptionCertificateFile;
 
-    @Value("${mastercard.api.encryption.fingerPrint}")
+    @Value("${mastercard.api.encryption.fingerPrint:#{null}}")
     private String encryptionCertificateFingerPrint;
 
-    @Value("${mastercard.api.decryption.keystore}")
+    @Value("${mastercard.api.decryption.keystore:#{null}}")
     private Resource decryptionKeystore;
 
-    @Value("${mastercard.api.decryption.alias}")
+    @Value("${mastercard.api.decryption.alias:#{null}}")
     private String decryptionKeystoreAlias;
 
-    @Value("${mastercard.api.decryption.keystore.password}")
+    @Value("${mastercard.api.decryption.keystore.password:#{null}}")
     private String decryptionKeystorePassword;
 
-    @Value("${mastercard.client.encryption.enable}")
+    @Value("${mastercard.client.encryption.enable:false}")
     private boolean isEncryptionEnable;
 
-    @Value("${mastercard.client.decryption.enable}")
+    @Value("${mastercard.client.decryption.enable:false}")
     private boolean isDecryptionEnable;
 
     @Override
