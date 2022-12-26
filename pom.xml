@@ -30,7 +30,7 @@
         <sonar.projectKey>Mastercard_mastercard-idservice-idp-reference-app</sonar.projectKey>
         <sonar.coverage.exclusions>
             **/com/mastercard/dis/mids/reference/config/*,
-            **/com/mastercard/dis/mids/reference/interceptor/*
+            **/com/mastercard/dis/mids/reference/interceptor/*,
             **/com/mastercard/dis/mids/reference/constants/*
         </sonar.coverage.exclusions>
     </properties>
