@@ -32,7 +32,7 @@ public class IDPServiceReferenceClient {
     @Value("${arid}")
     private String arid;
 
-    @Value("${mastercard.client.encryption.enable}")
+    @Value("${mastercard.client.encryption.enable:false}")
     private boolean encryptedPayload;
 
     public void getRPRequestedScopes(String inputtedArid) {
