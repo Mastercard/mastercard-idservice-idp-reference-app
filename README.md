@@ -1,9 +1,7 @@
-# Mastercard Id Service IDP Reference Implementation
+# Mastercard ID Service IDP Reference Implementation
+[![](https://developer.mastercard.com/_/_/src/global/assets/svg/mcdev-logo-dark.svg)](https://developer.mastercard.com/)
 
 [![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_mastercard-idservice-idp-reference-app&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Mastercard_mastercard-idservice-idp-reference-app)
-[![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_mastercard-idservice-idp-reference-app&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Mastercard_mastercard-idservice-idp-reference-app)
-[![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_mastercard-idservice-idp-reference-app&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=Mastercard_mastercard-idservice-idp-reference-app)
 
 ## Table of Contents
 - [Overview](#overview)
@@ -26,7 +24,7 @@
 - [License](#license)
 
 ## Overview <a name="overview"></a>
-ID is a digital identity service from MastercardⓇ that helps you apply for, enroll in, log in to, and access services more simply, securely and privately. Rather than manually providing your information when you are trying to complete tasks online or in apps, ID enables you to share your verified information automatically, more securely, and with your consent and control. ID also enables you to do away with passwords and protects your personal information. Please see here for more details on the API: [Mastercard Developers](https://developer.mastercard.com/mastercard-id-service/documentation/).
+ID is a digital identity service from Mastercard that helps you apply for, enroll in, log in to, and access services more simply, securely and privately. Rather than manually providing your information when you are trying to complete tasks online or in apps, ID enables you to share your verified information automatically, more securely, and with your consent and control. ID also enables you to do away with passwords and protects your personal information. Please see here for more details on the API: [Mastercard Developers](https://developer.mastercard.com/mastercard-id-service/documentation/).
 
 For more information regarding the program refer to [Id Service](https://idservice.com/)
 
@@ -36,6 +34,8 @@ For more information regarding the program refer to [Id Service](https://idservi
 ### References <a name="references"></a>
 * [Mastercard’s OAuth Signer library](https://github.com/Mastercard/oauth1-signer-java)
 * [Using OAuth 1.0a to Access Mastercard APIs](https://developer.mastercard.com/platform/documentation/using-oauth-1a-to-access-mastercard-apis/)
+* [Mastercard’s Payload Encryption/Decryption library](https://github.com/Mastercard/client-encryption-java)
+* [Using Payload Encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/)
 
 ## Usage <a name="usage"></a>
 ### Prerequisites <a name="prerequisites"></a>
@@ -52,7 +52,7 @@ For more information regarding the program refer to [Id Service](https://idservi
 * Select all `.p12` files, `.pem` file and copy it to `src/main/resources` in the project folder.
 * Open `${project.basedir}/src/main/resources/application.properties` and configure below parameters.
     
-    >**mastercard.api.base.path=corresponding MC ID Service Url, example : https://sandbox.api.mastercard.com/mcidservice**, its a static field, will be used as a host to make API calls.
+    >**mastercard.api.base.path=corresponding MC ID Service Url, example : https://sandbox.api.mastercard.com/mcidservice**, it's a static field, will be used as a host to make API calls.
     
     **The properties below will be required for authentication of API calls.**
     
@@ -133,9 +133,9 @@ Now that you have all the dependencies you need, you can generate the sources. T
 Navigate to the test package and right click to  `Run All Tests`
 
 ### Use cases <a name="use-cases"></a>
-Main use cases in Mastercard Id Service Reference APIs are Personal Data Storage, SMS One Time Password, Email One Time Password, Document Verification, Initiate Authentications, Re-Authentication, Claims Sharing, Audit Events, User profiles                                                               
+Main use cases in Mastercard ID Service Reference APIs are Personal Data Storage, SMS One Time Password, Email One Time Password, Document Verification, Initiate Authentications, Re-Authentication, Claims Sharing, Audit Events, User profiles                                                               
 
-Below are the different APIs available in Mastercard Id Service IDP Reference application:
+Below are the different APIs available in Mastercard ID Service IDP Reference application:
 
 
 ## API Reference <a name="api-reference"></a>
@@ -143,7 +143,7 @@ Below are the different APIs available in Mastercard Id Service IDP Reference ap
 
 
 ### Authorization <a name="authorization"></a>
-The `com.mastercard.dis.mids.reference.config` package will provide you API client. These class will take care of adding the correct `Authorization` header before sending the request.
+The `com.mastercard.dis.mids.reference.config` package will provide you API client. This class will take care of adding the correct `Authorization` header before sending the request.
 
 ### Encryption and Decryption <a name="encryption-decryption"></a>
 The `com.mastercard.dis.mids.reference.interceptor` package will provide you with interceptor class which used in API client. This class will encrypt the request body and add the encrypted text as value to 'encryptedData' JSON property in the request body before sending the request and decrypt the 'encryptedData' JSON property value from the response body.
@@ -157,13 +157,13 @@ It is recommended to create an instance of `ApiClient` per thread in a multithre
 
 ## Support <a name="support"></a>
 If you would like further information, please send an email to `IDservicepilothelp@mastercard.com`
-- For information regarding licensing, refer to the [License file](LICENSE.md).
-- For copyright information, refer to the [COPYRIGHT.md](COPYRIGHT.md).
-- For instructions on how to contribute to this project, refer to the [Contributing file](CONTRIBUTING.md).
-- For changelog information, refer to the [CHANGELOG.md](CHANGELOG.md).
+- For information regarding licensing, refer to the [LICENSE file](LICENSE.md).
+- For copyright information, refer to the [COPYRIGHT](COPYRIGHT.md).
+- For instructions on how to contribute to this project, refer to the [CONTRIBUTING file](CONTRIBUTING.md).
+- For changelog information, refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License <a name="license"></a>
-Copyright 2022 Mastercard
+Copyright 2023 Mastercard
  
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  
