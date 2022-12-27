@@ -40,6 +40,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
 
     public IDPReferenceApplication(IDPServiceReferenceClient idpServiceReference) {
         this.idpServiceReference = idpServiceReference;
+        scanner = new Scanner(System.in, "UTF-8");
     }
 
     public static void main(String[] args) {
@@ -49,7 +50,6 @@ public class IDPReferenceApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        scanner = new Scanner(System.in, "UTF-8");
         while (!exit) {
             showMenu();
             handleOption(scanner.nextLine());
@@ -70,6 +70,9 @@ public class IDPReferenceApplication implements CommandLineRunner {
         log.info("Your option : " + option);
 
         switch (option) {
+            case "0":
+                exit = true;
+                break;
             case "1":
                 //get scopes
                 getRPScopes();

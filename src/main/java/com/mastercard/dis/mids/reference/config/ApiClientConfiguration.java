@@ -67,7 +67,7 @@ public class ApiClientConfiguration {
     private String userIdentifier;
 
     //this header needs to be enabled to test encryption, use the same property for encryptionHeader
-    @Value("${mastercard.client.encryption.enable}")
+    @Value("${mastercard.client.encryption.enable:false}")
     private boolean encryptionEnabled;
 
     @PostConstruct
