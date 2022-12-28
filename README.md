@@ -1,4 +1,5 @@
 # ID for Identity Providers Reference Implementation
+[![](https://developer.mastercard.com/_/_/src/global/assets/svg/mcdev-logo-dark.svg)](https://developer.mastercard.com/)
 
 [![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_mastercard-idservice-idp-reference-app&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Mastercard_mastercard-idservice-idp-reference-app)
@@ -36,6 +37,8 @@ For more information regarding the program refer to [Id Service](https://idservi
 ### References <a name="references"></a>
 * [Mastercard’s OAuth Signer library](https://github.com/Mastercard/oauth1-signer-java)
 * [Using OAuth 1.0a to Access Mastercard APIs](https://developer.mastercard.com/platform/documentation/using-oauth-1a-to-access-mastercard-apis/)
+* [Mastercard’s Payload Encryption/Decryption library](https://github.com/Mastercard/client-encryption-java)
+* [Using Payload Encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/)
 
 ## Usage <a name="usage"></a>
 ### Prerequisites <a name="prerequisites"></a>
@@ -124,6 +127,7 @@ Now that you have all the dependencies you need, you can generate the sources. T
 Navigate to the test package and right click to  `Run All Tests`
 
 ### Use cases <a name="use-cases"></a>
+
 Main use cases in ID for Identity Providers Reference APIs are Personal Data Storage, SMS One Time Password, Email One Time Password, Document Verification, Initiate Authentications, Re-Authentication, Claims Sharing, Audit Events, User profiles                                                               
 
 Below are the different APIs available in ID for Identity Providers Reference application:
@@ -142,13 +146,13 @@ It is recommended to create an instance of `ApiClient` per thread in a multithre
 
 ## Support <a name="support"></a>
 If you would like further information, please send an email to `IDservicepilothelp@mastercard.com`
-- For information regarding licensing, refer to the [License file](LICENSE.md).
-- For copyright information, refer to the [COPYRIGHT.md](COPYRIGHT.md).
-- For instructions on how to contribute to this project, refer to the [CONTRIBUTING file](CONTRIBUTING.md).
-- For changelog information, refer to the [CHANGELOG.md](CHANGELOG.md).
+- For information regarding licensing, refer to the [LICENSE](LICENSE.md).
+- For copyright information, refer to the [COPYRIGHT](COPYRIGHT.md).
+- For instructions on how to contribute to this project, refer to the [CONTRIBUTING](CONTRIBUTING.md).
+- For changelog information, refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License <a name="license"></a>
-Copyright 2022 Mastercard
+Copyright 2023 Mastercard
  
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  

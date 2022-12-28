@@ -37,10 +37,10 @@ advances
 * Publishing others' private information, such as a physical or electronic
   address, without explicit permission
 * Other conduct which could reasonably be considered inappropriate in a
-  rofessional setting
+  professional setting
 
 ## How to engage Maintainers
 Leaving Issues using the issue tracker in GitHub.
 Maintainers will look for issues posted to the repository and will resolve the issue as soon as possible.
 
-**Copyright © 1994-2022, All Rights Reserved by Mastercard.**
+**Copyright © 1994-2023, All Rights Reserved by Mastercard.**
