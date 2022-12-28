@@ -141,9 +141,9 @@ It is recommended to create an instance of `ApiClient` per thread in a multithre
 
 ## Support <a name="support"></a>
 If you would like further information, please send an email to `IDservicepilothelp@mastercard.com`
-- For information regarding licensing, refer to the [LICENSE file](LICENSE.md).
+- For information regarding licensing, refer to the [LICENSE](LICENSE.md).
 - For copyright information, refer to the [COPYRIGHT](COPYRIGHT.md).
-- For instructions on how to contribute to this project, refer to the [CONTRIBUTING file](CONTRIBUTING.md).
+- For instructions on how to contribute to this project, refer to the [CONTRIBUTING](CONTRIBUTING.md).
 - For changelog information, refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License <a name="license"></a>
