@@ -27,7 +27,7 @@
 - [License](#license)
 
 ## Overview <a name="overview"></a>
-ID is a digital identity service from Mastercard that helps you apply for, enroll in, log in to, and access services more simply, securely and privately. Rather than manually providing your information when you are trying to complete tasks online or in apps, ID enables you to share your verified information automatically, more securely, and with your consent and control. ID also enables you to do away with passwords and protects your personal information. Please see here for more details on the API: [Mastercard Developers](https://developer.mastercard.com/mastercard-id-service/documentation/).
+ID is a digital identity service from Mastercard that helps you apply for, enroll in, log in to, and access services more simply, securely and privately. Rather than manually providing your information when you are trying to complete tasks online or in apps, ID enables you to share your verified information automatically, more securely, and with your consent and control. ID also enables you to do away with passwords and protects your personal information. Please see here for more details on the API: [Mastercard Developers](https://developer.mastercard.com/mastercard-id-for-idp/documentation/).
 
 For more information regarding the program refer to [Id Service](https://idservice.com/)
 
@@ -55,7 +55,7 @@ For more information regarding the program refer to [Id Service](https://idservi
 * Select all `.p12` files, `.pem` file and copy it to `src/main/resources` in the project folder.
 * Open `${project.basedir}/src/main/resources/application.properties` and configure below parameters.
     
-    >**mastercard.api.base.path=corresponding MC ID Service Url, example : https://sandbox.api.mastercard.com/mcidservice**, it's a static field, will be used as a host to make API calls.
+    >**mastercard.api.base.path=corresponding MC ID Service Url, example : https://developer.mastercard.com/mastercard-id-for-idp/documentation/**, it's a static field, will be used as a host to make API calls.
     
     **The properties below will be required for authentication of API calls.**
     
