@@ -57,7 +57,8 @@ For more information regarding the program refer to [Id Service](https://idservi
     
     >**mastercard.api.base.path=corresponding MC ID Service Url, example : https://developer.mastercard.com/mastercard-id-for-idp/documentation/**, it's a static field, will be used as a host to make API calls.
     
-    **The properties below will be required for authentication of API calls.**
+    **The properties below will be required for authentication of API calls.**  
+    **You can contact the support to create a new ARID (one for each request) and a 'User Identifier' to make a request call.**
     
     >**mastercard.api.key.file=**, this refers to .p12 file found in the signing key. Please place .p12 file at src\main\resources in the project folder and add classpath for .p12 file.
     
