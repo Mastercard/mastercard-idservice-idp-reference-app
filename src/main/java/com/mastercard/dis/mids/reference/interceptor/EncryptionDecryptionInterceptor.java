@@ -65,7 +65,7 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
     @Value("${mastercard.client.decryption.enable:false}")
     private boolean isDecryptionEnable;
 
-    private static PrivateKey signingKey;
+    private static volatile PrivateKey signingKey;
 
     @Nonnull
     @Override
