@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,9 +21,7 @@ class ApiClientConfigurationTest {
     @Test
     void Should_throw_service_exception_when_keyFile_and_consumerKey_are_empty(){
         String message = ".p12 file or consumerKey does not exist, please add details in application.properties";
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            apiClientConfiguration.initialize();
-        });
+        Exception exception = assertThrows(ServiceException.class, () -> apiClientConfiguration.initialize());
         assertNotNull(exception);
         assertEquals(message, exception.getMessage());
     }
@@ -34,9 +31,7 @@ class ApiClientConfigurationTest {
         String message = "Error occurred while configuring ApiClient";
         EncryptionDecryptionInterceptor interceptor = mock(EncryptionDecryptionInterceptor.class);
 
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            apiClientConfiguration.apiClient(interceptor);
-        });
+        Exception exception = assertThrows(ServiceException.class, () -> apiClientConfiguration.apiClient(interceptor));
         assertNotNull(exception);
         assertEquals(message, exception.getMessage());
     }

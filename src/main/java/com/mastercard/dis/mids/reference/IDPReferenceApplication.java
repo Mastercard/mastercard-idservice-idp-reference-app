@@ -22,11 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Pattern;
-
 import static com.mastercard.dis.mids.reference.constants.Constants.UUID_REGEX;
 
 @Slf4j
@@ -35,7 +32,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
 
     private static final String ERROR = "Error : ";
     private final IDPServiceReferenceClient idpServiceReference;
-    private Scanner scanner;
+    private final Scanner scanner;
     private boolean exit = false;
 
     public IDPReferenceApplication(IDPServiceReferenceClient idpServiceReference) {
@@ -52,9 +49,11 @@ public class IDPReferenceApplication implements CommandLineRunner {
     public void run(String... args) {
         while (!exit) {
             showMenu();
-            handleOption(scanner.nextLine());
+            String option = scanner.nextLine();
+            handleOption(option);
             pressAnyKey();
         }
+        scanner.close();
         System.exit(0);
     }
 
@@ -91,7 +90,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
             log.info("<<--- RetrieveRPScopes Started --->>");
             log.info("---> Type a valid arid or press ENTER to use the properties one:");
             String inputtedArid = scanner.nextLine();
-            if (Pattern.compile(UUID_REGEX).matcher(inputtedArid).matches()) {
+            if (UUID_REGEX.matcher(inputtedArid).matches()) {
                 log.info("<<--- RetrieveRPScopes Using typed arid --->>");
                 idpServiceReference.getRPRequestedScopes(inputtedArid);
             } else {
@@ -110,7 +109,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
             log.info("<<--- ScopesFulfillment Started --->>");
             log.info("---> Type a valid arid or press ENTER to use the properties one:");
             String inputtedArid = scanner.nextLine();
-            if (Pattern.compile(UUID_REGEX).matcher(inputtedArid).matches()) {
+            if (UUID_REGEX.matcher(inputtedArid).matches()) {
                 log.info("<<--- ScopesFulfillment Using typed arid --->>");
                 idpServiceReference.fillRPScopesWithClaims(inputtedArid);
             } else {
