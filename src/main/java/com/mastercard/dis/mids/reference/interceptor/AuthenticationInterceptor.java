@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Interceptor;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
+import javax.annotation.Nonnull;
 
 import java.io.IOException;
 import java.security.PrivateKey;
@@ -34,6 +35,7 @@ public class AuthenticationInterceptor implements Interceptor {
         this.userIdentifier = userIdentifier;
     }
 
+    @Nonnull
     @Override
     public Response intercept(Chain chain) throws IOException {
         Builder builder = chain.request().newBuilder();

@@ -10,7 +10,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +29,9 @@ class AuthenticationInterceptorTest {
     private  AuthenticationInterceptor authenticationInterceptor;
 
 
-    private  String userIdentifier = "123456789";
+    private final String userIdentifier = "123456789";
 
-    private  String consumerKey = "abcdefghijklmnopqrs!98b1dd6dcf334b44b7fca00f26f323610000000000000000";
+    private final String consumerKey = "abcdefghijklmnopqrs!98b1dd6dcf334b44b7fca00f26f323610000000000000000";
 
     @Mock
     private  PrivateKey signingKey ;
@@ -61,7 +61,7 @@ class AuthenticationInterceptorTest {
             doReturn("RSA").when(signingKey).getAlgorithm();
             authenticationInterceptor.intercept(chain);
         }catch (ServiceException serviceException){
-            Assert.assertNotNull(serviceException);
+            Assertions.assertNotNull(serviceException);
         }
 
     }

@@ -29,15 +29,16 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
+import javax.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -64,6 +65,9 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
     @Value("${mastercard.client.decryption.enable:false}")
     private boolean isDecryptionEnable;
 
+    private static PrivateKey signingKey;
+
+    @Nonnull
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = handleRequest(chain.request());
@@ -97,18 +101,25 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
         return request;
     }
 
-    private Response handleResponse(Request request, Response encryptedResponse) {
+    private synchronized Response handleResponse(Request request, Response encryptedResponse) {
         if (isDecryptionEnable && isDecryptionRequired(request)) {
             try {
                 if (encryptedResponse.code() != 200) {
                     return encryptedResponse; // We will receive encrypted payload only for 200 response
                 }
                 ResponseBody responseBody = encryptedResponse.body();
-                String encryptedResponseStr = responseBody.string();
+                String encryptedResponseStr = Objects.requireNonNull(responseBody).string();
                 log.info("Encrypted Payload received from server: {}", encryptedResponseStr);
                 JSONObject encryptedResponseJson = (JSONObject) JSONValue.parse(encryptedResponseStr);
-                PrivateKey signingKey = AuthenticationUtils.loadSigningKey(decryptionKeystore.getURI().toString(), decryptionKeystoreAlias, decryptionKeystorePassword);
-                String decryptedPayload = EncryptionUtils.jweDecrypt(encryptedResponseJson.getAsString("encryptedData"), (RSAPrivateKey) signingKey);
+
+                if(signingKey == null){
+                    signingKey = AuthenticationUtils
+                            .loadSigningKey(decryptionKeystore.getURI().toString(),
+                            decryptionKeystoreAlias, decryptionKeystorePassword);
+                }
+
+               String decryptedPayload = EncryptionUtils
+                       .jweDecrypt(encryptedResponseJson.getAsString("encryptedData"), (RSAPrivateKey) signingKey );
 
                 Response.Builder responseBuilder = encryptedResponse.newBuilder();
                 ResponseBody decryptedBody = ResponseBody.create(decryptedPayload, responseBody.contentType());
@@ -142,7 +153,7 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
         try {
             final Request copy = request.newBuilder().build();
             final Buffer buffer = new Buffer();
-            copy.body().writeTo(buffer);
+            Objects.requireNonNull(copy.body()).writeTo(buffer);
             return buffer.readUtf8();
         } catch (final IOException e) {
             return "did not work";

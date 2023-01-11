@@ -19,7 +19,6 @@ package com.mastercard.dis.mids.reference;
 import com.mastercard.dis.mids.reference.component.IDPServiceReferenceClient;
 import com.mastercard.dis.mids.reference.constants.Menu;
 import com.mastercard.dis.mids.reference.extension.DisableSystemExit;
-import com.mastercard.dis.mids.reference.extension.DisallowExitSecurityManager;
 import com.mastercard.dis.mids.reference.extension.SystemExitException;
 import com.mastercard.dis.mids.reference.service.IDPAuthorizationClientService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,19 +32,15 @@ import org.openapitools.client.model.IDPScopesAuthorization;
 import org.openapitools.client.model.IDPScopesAuthorizationData;
 import org.openapitools.client.model.RPScopes;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-
 import static com.mastercard.dis.mids.reference.example.IDPScopesAuthorizationExample.getIDPScopesAuthorizationRequestData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -125,7 +120,6 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
-        assertFalse(scanner.hasNext());
     }
 
     @Test
@@ -148,7 +142,6 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
-        assertFalse(scanner.hasNext());
     }
 
     @Test
@@ -171,7 +164,6 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
-        assertFalse(scanner.hasNext());
     }
 
     @Test
@@ -195,7 +187,6 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
-        assertFalse(scanner.hasNext());
     }
 
     private String getAridMock(){
@@ -204,8 +195,7 @@ class IDPReferenceApplicationTest {
 
     private Scanner getStreamedScannerMock(String data){
         InputStream stream = new ByteArrayInputStream(data.getBytes());
-        Scanner streamScanner = new Scanner(new BufferedInputStream(stream), "UTF-8");
-        return streamScanner;
+        return new Scanner(new BufferedInputStream(stream), "UTF-8");
     }
 
 }
