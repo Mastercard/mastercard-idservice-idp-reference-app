@@ -65,7 +65,7 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
     @Value("${mastercard.client.decryption.enable:false}")
     private boolean isDecryptionEnable;
 
-    private static volatile PrivateKey signingKey;
+    private static PrivateKey signingKey;
 
     @Nonnull
     @Override
@@ -101,7 +101,7 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
         return request;
     }
 
-    private Response handleResponse(Request request, Response encryptedResponse) {
+    private synchronized Response handleResponse(Request request, Response encryptedResponse) {
         if (isDecryptionEnable && isDecryptionRequired(request)) {
             try {
                 if (encryptedResponse.code() != 200) {
