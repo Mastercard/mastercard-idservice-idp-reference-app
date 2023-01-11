@@ -9,7 +9,6 @@
 
 ## Table of Contents
 - [Overview](#overview)
-  * [Compatibility](#compatibility)
   * [References](#references)
 - [Usage](#usage)
   * [Prerequisites](#prerequisites)
@@ -21,7 +20,6 @@
   * [Use Cases](#use-cases)
 - [API Reference](#api-reference)
   * [Authorization](#authorization)
-  * [Encryption and Decryption](#encryption-decryption)
   * [Request Examples](#request-examples)
   * [Recommendation](#recommendation)
 - [Support](#support)
