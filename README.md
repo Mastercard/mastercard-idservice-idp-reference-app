@@ -14,10 +14,11 @@
   * [Prerequisites](#prerequisites)
   * [Configuration](#configuration)
   * [Integrating with OpenAPI Generator](#integrating-with-openapi-generator)
-  * [OpenAPI Generator Plugin Configuration](#openAPI_generator_plugin_configuration)
-  * [Generating The API Client Sources](#generating_the_API_client_sources)
+  * [OpenAPI Generator Plugin Configuration](#openapi-generator-plugin-configuration)
+  * [Generating The API Client Sources](#generating-the-api-client-sources)
   * [Test Case Execution](#test-case-execute)
   * [Use Cases](#use-cases)
+  * [Execute the Use-Cases](#execute-use-cases)
 - [API Reference](#api-reference)
   * [Authorization](#authorization)
   * [Request Examples](#request-examples)
@@ -38,12 +39,12 @@ For more information regarding the program, refer to [ID Service](https://idserv
 
 ## Usage <a name="usage"></a>
 ### Prerequisites <a name="prerequisites"></a>
-* [Mastercard Developers Account](https://developer.mastercard.com/dashboard) with access to ID for Identity Providers API.
-* A text editor or IDE.
-* [Spring Boot 2.2+ up to 2.7.x](https://spring.io/projects/spring-boot).
-* [Apache Maven 3.3+](https://maven.apache.org/download.cgi).
-* [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
-* Set up the `JAVA_HOME` environment variable to match the location of your Java installation.
+* [Mastercard Developers Account](https://developer.mastercard.com/dashboard) with access to ID for Identity Providers API
+* IntelliJ IDEA (or any other IDE)
+* [Spring Boot 2.2+ up to 2.7.x](https://spring.io/projects/spring-boot)
+* [Apache Maven 3.3+](https://maven.apache.org/download.cgi)
+* [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+* Set up the `JAVA_HOME` environment variable to match the location of your Java installation
 
 ### Configuration <a name="configuration"></a>
 * Create an account at [Mastercard Developers](https://developer.mastercard.com/account/sign-up).
@@ -78,7 +79,7 @@ See also:
 * [OpenAPI Generator (executable)](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli)
 * [CONFIG OPTIONS for java](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/java.md)
 
-#### OpenAPI Generator Plugin Configuration <a name="openAPI_generator_plugin_configuration"></a>
+#### OpenAPI Generator Plugin Configuration <a name="openapi-generator-plugin-configuration"></a>
 ```xml
 <!-- https://mvnrepository.com/artifact/org.openapitools/openapi-generator-maven-plugin -->
 <plugin>
@@ -106,7 +107,7 @@ See also:
 </plugin>
 ```
 
-#### Generating The API Client Sources <a name="generating_the_API_client_sources"></a>
+#### Generating The API Client Sources <a name="generating-the-api-client-sources"></a>
 Now that you have all the required dependencies, you can generate the sources. To do this, use one of the following two methods:
 
 `Using IDE`
@@ -127,6 +128,20 @@ Navigate to the test package and right click to  `Run All Tests`
 The main use cases in ID for Identity Providers Reference APIs are Personal Data Storage, SMS One Time Password, Email One Time Password, Document Verification, Initiate Authentications, Re-Authentication, Claims Sharing, Audit Events, User profiles                                                               
 Below are the different APIs available in ID for Identity Providers Reference application:
 
+### Execute the Use-Cases <a name="execute-use-cases"></a>
+1. Run mvn clean install from the root of the project directory.
+2. There are two ways to execute the user cases :
+    1. Execute the test cases
+      - At the `src/test/java` which is the main root folder for all Junit tests of the application.
+      - Run the tests.
+    2. Select the menu options provided by the application
+      - Run ```mvn spring-boot:run``` command to run the application.
+      - Once the application is running, you should be able to see and chose the follow three options :
+        - 0 Exit
+        - 1 RP Scopes
+        - 2 Scope-fulfillments
+      - The option 1 and 2 are going to ask for the arid value in case you press enter the arid value used is going to be the one found at the `application.properties` file 
+
 ## API Reference <a name="api-reference"></a>
 
 ### Authorization <a name="authorization"></a>
@@ -135,6 +150,7 @@ The `com.mastercard.dis.mids.reference.config` package will provide you API clie
 ### Request Examples <a name="request-examples"></a>
 You can change the default input passed to APIs, modify values in following file:
 * `com.mastercard.dis.mids.reference.constants.Constants`
+* The UUID_REGEX variable is responsible to validate the arid values typed by the user, example : f300565f-6b94-48bf-8242-0b854aefd9fa
 
 ### Recommendation <a name="recommendation"></a>
 It is recommended to create an instance of `ApiClient` per thread in a multithreaded environment to avoid any potential issues.
