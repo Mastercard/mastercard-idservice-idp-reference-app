@@ -187,7 +187,7 @@ We also recommend reading Using Payload Encryption link at the References sectio
 It is recommended to create an instance of `ApiClient` per thread in a multithreaded environment to avoid any potential issues.
 
 ## Support <a name="support"></a>
-If you would like further information, please send an email to `IDservicepilothelp@mastercard.com`
+If you would like further information, please send an email to `apisupport@mastercard.com`
 - For information regarding licensing, refer to the [LICENSE](LICENSE.md).
 - For copyright information, refer to the [COPYRIGHT](COPYRIGHT.md).
 - For instructions on how to contribute to this project, refer to the [CONTRIBUTING](CONTRIBUTING.md).
