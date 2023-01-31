@@ -124,7 +124,7 @@ See also:
 </plugin>
 ```
 #### Build the Project <a name="build-project"></a>
-Once you clone the project you have to make sure that IntelliJ IDEA recognise the folders. got to
+Once you clone the project you have to make sure that IntelliJ IDEA recognise the folders. Go to
 **(file > project structure > modules)** and select the folder `src/main/java` as a source and `src/test/java` as test folder,
 also check the language level at this configuration options and see if its select (8 - lambda type annotation etc.) following your java version
 add also the Maven support In the Project tool window, right-click your project and select Add Framework Support.
