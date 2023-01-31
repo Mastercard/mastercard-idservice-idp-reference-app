@@ -76,7 +76,7 @@ For more information regarding the program, refer to [ID Service](https://idserv
 
   >**mastercard.client.encryption.enable=** this parameter allows to encrypt the payload before to send to the server in case it's true.
 
-  >**mastercard.api.encryption.certificateFile=** contains the reference for the pem file certificate used by the client to verify and decrypt data sent, this file should be located at src/main/resources.
+  >**mastercard.api.encryption.certificateFile=** contains the reference for the pem file certificate used by the client to encrypt data sent, this file should be located at src/main/resources.
 
   >**mastercard.api.encryption.fingerPrint=** The fingerprint of the Mastercard public key used to encrypt the ephemeral AES key.
   more information please refer at [Issuer-Initiated Tokenization](https://developer.mastercard.com/mdes-pre-digitization/documentation/use_case/issuer-tokenization/).
