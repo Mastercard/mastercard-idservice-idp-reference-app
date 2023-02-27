@@ -34,7 +34,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
       description: |
-        To retrieve the requested scopes and RP details associated with the ARID.\
+        To retrieve the requested scopes and RP details associated with the ARID.   
         **This API is mandatory.**
       operationId: retrieveRPScopes
       parameters:
@@ -56,8 +56,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
       description: |
-        Process claims data  provided by the IDP for the corresponding RP authentication.
-        Request scopes and update the authentication request.\
+        Process claims data  provided by the IDP for the corresponding RP authentication.   
+        Request scopes and update the authentication request.   
          **This API is mandatory.**
       summary: >-
         To process the IDP claims and update the authentication request with the claims data. The Relying
@@ -72,6 +72,11 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/IDPScopesAuthorization'
+          examples:
+            ScopeFulfillmentRequestUnencryptedExample:
+              $ref: '#/components/examples/IDPScopesAuthorizationRequestExample'
+            ScopeFulfillmentRequestEncryptedExample:
+              $ref: '#/components/examples/EncryptedPayloadNoPDSExample'
       required: true
   parameters:
     AridParameter:
@@ -117,6 +122,11 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/IDPScopesAuthorizationData'
+          examples:
+            ScopeFulfillmentResponseUnencryptedExample:
+              $ref: '#/components/examples/IDPScopesAuthorizationDataResponseExample'
+            ScopeFulfillmentResponseEncryptedExample:
+              $ref: '#/components/examples/EncryptedPayloadNoPDSExample'
     BadRequestError:
       description: The server cannot process the request due to bad request. client should consider correcting the request before retrying again.
       content:
@@ -325,6 +335,9 @@ components:
           maxLength: 1000
           example:  IOException Occured
   examples:
+    EncryptedPayloadNoPDSExample:
+      value:
+        encryptedData: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyf
     BadRequestClaimsEmptyExample:
       value:
         Errors:
@@ -367,3 +380,24 @@ components:
               ReasonCode: CLAIM_SHARING_ARID_DOES_NOT_EXIST
               Description: ARID does not exist.
               Recoverable: false
+    IDPScopesAuthorizationRequestExample:
+      value:
+        claims:
+          - claim: address:0:250
+            values:
+              - name: address
+                value: 2102 North Square Blvd
+          - claim: govtId:0:100
+            values:
+              - name: firstName
+                value: abc
+              - name: lastName
+                value: xyz
+              - name: dateOfBirth
+                value: '1990-12-12'
+        userConsent: ACCEPT
+        locale: en-US
+        countryCode: US
+    IDPScopesAuthorizationDataResponseExample:
+      value:
+        redirectUri: http://rp.com/auth?code=xcxxzaas3&state=xccx234
