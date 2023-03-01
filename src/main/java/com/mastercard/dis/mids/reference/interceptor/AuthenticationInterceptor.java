@@ -11,7 +11,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Interceptor;
-import okhttp3.Request.Builder;
+import okhttp3.Request;
 import okhttp3.Response;
 import javax.annotation.Nonnull;
 
@@ -38,16 +38,20 @@ public class AuthenticationInterceptor implements Interceptor {
     @Nonnull
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Builder builder = chain.request().newBuilder();
+        Request request = handleRequest(chain.request());
+        return chain.proceed(request);
+    }
+
+    private Request handleRequest(Request request)  {
         StringBuilder header = new StringBuilder("Bearer ");
         try {
             header.append(getSignedJWT());
         } catch (JOSEException e) {
-            log.error("Error occurred while configuring ApiClient", e);
-            throw new ServiceException("Error occurred while configuring ApiClient", e);
+            log.error("Error occurred while configuring the AuthenticationInterceptor", e);
+            throw new ServiceException("Error occurred while configuring the AuthenticationInterceptor", e);
         }
-        builder.addHeader("Authorization", header.toString());
-        return chain.proceed(builder.build());
+        request = request.newBuilder().addHeader("Authorization", header.toString()).build();
+        return request;
     }
 
     private String getSignedJWT() throws JOSEException {

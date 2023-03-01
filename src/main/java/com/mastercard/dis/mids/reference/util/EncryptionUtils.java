@@ -41,9 +41,9 @@ import static com.mastercard.developer.utils.EncryptionUtils.loadEncryptionCerti
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EncryptionUtils {
 
-    public static String jweEncrypt(String plainData, Resource certificateFile, String keyFingerPrint) {
+    public static String jweEncrypt(String plainData, Resource certificateFile, String encryptionCertificateFingerPrint) {
         try {
-            return encryptWithPublicKey(plainData, keyFingerPrint, certificateFile.getFile().getPath());
+            return encryptWithPublicKey(plainData, encryptionCertificateFingerPrint, certificateFile.getFile().getPath());
         } catch (IOException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -62,18 +62,17 @@ public class EncryptionUtils {
         }
     }
 
-    private static String encryptWithPublicKey(String plainData, String keyFingerPrint, String certificateFilePath) {
+    private static String encryptWithPublicKey(String plainData, String encryptionCertificateFingerPrint, String certificateFilePath) {
         // Encrypt the JWE with the RSA public key + specified AES CEK
         final JweHeader jweHeader = new JweHeader(
                 JweAlgorithm.RSA_OAEP_256.getValue(),
                 EncryptionMethod.A256GCM.getValue(),
-                keyFingerPrint, null);
+                encryptionCertificateFingerPrint, "application/json");
 
         try {
             Certificate encCert = loadEncryptionCertificate(certificateFilePath);
             JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
                     .withEncryptionCertificate(encCert)
-                    .withEncryptionKeyFingerprint(keyFingerPrint)
                     .build();
             return JweObject.encrypt(config, plainData, jweHeader);
         } catch (IOException | GeneralSecurityException | EncryptionException e) {
