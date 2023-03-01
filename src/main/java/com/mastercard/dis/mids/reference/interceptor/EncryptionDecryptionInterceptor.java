@@ -19,6 +19,7 @@ package com.mastercard.dis.mids.reference.interceptor;
 import com.mastercard.developer.utils.AuthenticationUtils;
 import com.mastercard.dis.mids.reference.exception.ServiceException;
 import com.mastercard.dis.mids.reference.util.EncryptionUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -30,40 +31,34 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
 import javax.annotation.Nonnull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static com.mastercard.dis.mids.reference.constants.Constants.X_ENCRYPTED_PAYLOAD;
+
 @Slf4j
-@Component
+@RequiredArgsConstructor
 public class EncryptionDecryptionInterceptor implements Interceptor {
 
-    @Value("${mastercard.api.encryption.certificateFile:#{null}}")
-    private Resource encryptionCertificateFile;
+    private final Resource encryptionCertificateFile;
 
-    @Value("${mastercard.api.encryption.fingerPrint:#{null}}")
-    private String encryptionCertificateFingerPrint;
+    private final String encryptionCertificateFingerPrint;
 
-    @Value("${mastercard.api.decryption.keystore:#{null}}")
-    private Resource decryptionKeystore;
+    private final Resource decryptionKeystore;
 
-    @Value("${mastercard.api.decryption.alias:#{null}}")
-    private String decryptionKeystoreAlias;
+    private final String decryptionKeystoreAlias;
 
-    @Value("${mastercard.api.decryption.keystore.password:#{null}}")
-    private String decryptionKeystorePassword;
+    private final String decryptionKeystorePassword;
 
-    @Value("${mastercard.client.encryption.enable:false}")
-    private boolean isEncryptionEnable;
+    private final boolean isEncryptionEnable;
 
-    @Value("${mastercard.client.decryption.enable:false}")
-    private boolean isDecryptionEnable;
+    private final boolean isDecryptionEnable;
 
     private static PrivateKey signingKey;
 
@@ -77,21 +72,19 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
 
     private Request handleRequest(Request request) {
         log.info("request.url(): {}", request.url().uri().getPath());
-        if (isEncryptionEnable && isEncryptionRequired(request)) {
+        if (isEncryptionEnable && isEncryptionAllowed(request)) {
             try {
                 String body = bodyToString(request);
-                JSONObject requestJson = (JSONObject) JSONValue.parse(body);
-
-                String encryptedData = EncryptionUtils.jweEncrypt(requestJson.toJSONString(), encryptionCertificateFile, encryptionCertificateFingerPrint);
+                String encryptedData = EncryptionUtils.jweEncrypt(body, encryptionCertificateFile, encryptionCertificateFingerPrint);
                 JSONObject encryptedRequestJson = new JSONObject();
                 encryptedRequestJson.put("encryptedData", encryptedData);
                 log.info("Encrypted Payload sending to server: {}", encryptedRequestJson);
-                Request.Builder post = request
+                Request.Builder put = request
                         .newBuilder()
                         .headers(request.headers())
-                        .post(RequestBody.create(encryptedRequestJson.toJSONString(), MediaType.parse("application/json")));
-                return post.build();
-
+                        .addHeader(X_ENCRYPTED_PAYLOAD, "true")
+                        .put(RequestBody.create(encryptedRequestJson.toJSONString(), MediaType.parse("application/json")));
+                return put.build();
             } catch (Exception e) {
                 log.error("Unable to encrypt request data to server", e);
                 throw new ServiceException("Unable to encrypt request data to server", e);
@@ -102,24 +95,28 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
     }
 
     private synchronized Response handleResponse(Request request, Response encryptedResponse) {
-        if (isDecryptionEnable && isDecryptionRequired(request)) {
+        if (isDecryptionEnable && isDecryptionAllowed(request)) {
             try {
                 if (encryptedResponse.code() != 200) {
                     return encryptedResponse; // We will receive encrypted payload only for 200 response
                 }
                 ResponseBody responseBody = encryptedResponse.body();
                 String encryptedResponseStr = Objects.requireNonNull(responseBody).string();
-                log.info("Encrypted Payload received from server: {}", encryptedResponseStr);
                 JSONObject encryptedResponseJson = (JSONObject) JSONValue.parse(encryptedResponseStr);
+                if (null == encryptedResponseJson.getAsString("encryptedData")){
+                    log.info("The decryption is set to 'true', but there is no encrypted response");
+                    return encryptedResponse.newBuilder().body(ResponseBody.create(encryptedResponseStr, MediaType.parse("application/json"))).build();
+                }
+                log.info("Encrypted Payload received from server: {}", encryptedResponseStr);
 
-                if(signingKey == null){
+                if (signingKey == null) {
                     signingKey = AuthenticationUtils
-                            .loadSigningKey(decryptionKeystore.getURI().toString(),
-                            decryptionKeystoreAlias, decryptionKeystorePassword);
+                            .loadSigningKey(Files.newInputStream(decryptionKeystore.getFile().toPath()),
+                                    decryptionKeystoreAlias, decryptionKeystorePassword);
                 }
 
-               String decryptedPayload = EncryptionUtils
-                       .jweDecrypt(encryptedResponseJson.getAsString("encryptedData"), (RSAPrivateKey) signingKey );
+                String decryptedPayload = EncryptionUtils
+                        .jweDecrypt(encryptedResponseJson.getAsString("encryptedData"), (RSAPrivateKey) signingKey);
 
                 Response.Builder responseBuilder = encryptedResponse.newBuilder();
                 ResponseBody decryptedBody = ResponseBody.create(decryptedPayload, responseBody.contentType());
@@ -137,16 +134,16 @@ public class EncryptionDecryptionInterceptor implements Interceptor {
         return encryptedResponse;
     }
 
-    private boolean isEncryptionRequired(Request request) {
-        List<String> list = Collections.singletonList(
+    private boolean isEncryptionAllowed(Request request) {
+        List<String> encryptionEndpoints = Collections.singletonList(
                 "/idservice-idp/scope-fulfillments");
-        return list.stream().anyMatch(entry -> request.url().uri().getPath().contains(entry));
+        return encryptionEndpoints.stream().anyMatch(entry -> request.url().uri().getPath().contains(entry));
     }
 
-    private boolean isDecryptionRequired(Request request) {
-        List<String> list = Collections.singletonList(
-                "");
-        return list.stream().anyMatch(entry -> request.url().uri().getPath().contains(entry));
+    private boolean isDecryptionAllowed(Request request) {
+        List<String> decryptionEndpoints = Collections.singletonList(
+                "/idservice-idp/scope-fulfillments");
+        return decryptionEndpoints.stream().anyMatch(entry -> request.url().uri().getPath().contains(entry));
     }
 
     private String bodyToString(Request request) {

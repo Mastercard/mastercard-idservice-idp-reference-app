@@ -25,8 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -123,6 +122,30 @@ class IDPAuthorizationClientServiceImplTest {
         } catch (ServiceException e) {
             verify(exceptionUtil, times(1)).logAndConvertToServiceException(any());
         }
+    }
+
+    @Test
+    void fillScopesFulfillment_illegalArgumentException() throws ApiException {
+        IDPScopesAuthorization requestData = new IDPScopesAuthorization();
+
+        when(apiClientMock.execute(any(), any())).thenThrow(new IllegalArgumentException());
+
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> iDPScopesFulfillmentServiceImpl.fillScopesFulfillment(ARID, requestData, ENCRYPTEDPAYLOAD));
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    void fillScopesFulfillment_withEncryptedDataReturn() throws ApiException {
+        IDPScopesAuthorization requestData = new IDPScopesAuthorization();
+
+        when(apiClientMock.execute(any(), any())).thenThrow(new IllegalArgumentException("The field `encryptedData` in the JSON string is not defined in the `IDPScopesAuthorizationData` properties. JSON: {\"encryptedData\":\"eyJraWQiO.ajsnfkjanjwfja.asds654fa5das\"}"));
+
+        IDPScopesAuthorizationData idpScopesAuthorizationData = iDPScopesFulfillmentServiceImpl.fillScopesFulfillment(ARID, requestData, ENCRYPTEDPAYLOAD);
+
+        assertDoesNotThrow(() -> iDPScopesFulfillmentServiceImpl.fillScopesFulfillment(ARID, requestData, ENCRYPTEDPAYLOAD));
+        assertNull(idpScopesAuthorizationData);
     }
 
     private IDPScopesAuthorizationData getIDPScopesAuthorizationResponseData() {
