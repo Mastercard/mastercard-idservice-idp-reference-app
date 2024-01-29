@@ -24,8 +24,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Pattern;
-
 import static com.mastercard.dis.mids.reference.constants.Constants.UUID_REGEX;
 
 @Slf4j
@@ -97,7 +95,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
             log.info("<<--- RetrieveRPScopes Started --->>");
             log.info(TYPE_A_VALID_ARID_OR_PRESS_ENTER_TO_USE_THE_PROPERTIES_ONE);
             String inputtedArid = scanner.nextLine();
-            if (Pattern.compile(UUID_REGEX).matcher(inputtedArid).matches()) {
+            if (UUID_REGEX.matcher(inputtedArid).matches()) {
                 log.info("<<--- RetrieveRPScopes Using typed arid --->>");
                 idpServiceReference.getRPRequestedScopes(inputtedArid);
             } else {
@@ -116,7 +114,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
             log.info("<<--- ScopesFulfillment Started --->>");
             log.info(TYPE_A_VALID_ARID_OR_PRESS_ENTER_TO_USE_THE_PROPERTIES_ONE);
             String inputtedArid = scanner.nextLine();
-            if (Pattern.compile(UUID_REGEX).matcher(inputtedArid).matches()) {
+            if (UUID_REGEX.matcher(inputtedArid).matches()) {
                 log.info("<<--- ScopesFulfillment Using typed arid --->>");
                 idpServiceReference.fillRPScopesWithClaims(inputtedArid);
             } else {

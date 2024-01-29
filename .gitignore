@@ -18,3 +18,5 @@ release.properties
 **/*.log
 **/*.log.*
 **/main/resources/version.properties
+**/main/resources/*.pem
+*.p12

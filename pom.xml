@@ -22,8 +22,8 @@
         <gson-fire.version>1.8.5</gson-fire.version>
         <oauth1-signer.version>1.5.2</oauth1-signer.version>
         <swagger-parser.version>2.1.2</swagger-parser.version>
-        <client-encryption-version>1.7.5</client-encryption-version>
-        <openapi-generator.version>6.1.0</openapi-generator.version>
+        <client-encryption-version>1.7.7</client-encryption-version>
+        <openapi-generator.version>6.2.1</openapi-generator.version>
         <javax-ws-version>2.1.1</javax-ws-version>
         <sonar.organization>mastercard</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>

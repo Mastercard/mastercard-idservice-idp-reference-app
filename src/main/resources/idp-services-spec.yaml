@@ -9,9 +9,9 @@ info:
     url: 'https://developer.mastercard.com/support'
     email: apisupport@mastercard.com
 servers:
-  - url: 'https://api.mastercard.com.au/mids-idp'
+  - url: 'https://api.mastercard.com.au/idservice-idp'
     description: Production server (uses live data).
-  - url: 'https://sandbox.api.mastercard.com.au/mids-idp'
+  - url: 'https://sandbox.api.mastercard.com.au/idservice-idp'
     description: Sandbox server (testing environment).
 tags:
   - name: IDP Scopes Request
@@ -36,7 +36,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
       description: |
-        To retrieve the requested scopes and RP details associated with the ARID.   
+        To retrieve the requested scopes and RP details associated with the ARID.
         **This API is mandatory.**
       operationId: retrieveRPScopes
       parameters:
@@ -58,8 +58,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
       description: |
-        Process claims data  provided by the IDP for the corresponding RP authentication.   
-        Request scopes and update the authentication request.   
+        Process claims data  provided by the IDP for the corresponding RP authentication.
+        Request scopes and update the authentication request.
          **This API is mandatory.**
       summary: >-
         To process the IDP claims and update the authentication request with the claims data. The Relying

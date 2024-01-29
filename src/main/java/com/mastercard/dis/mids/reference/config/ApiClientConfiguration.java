@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,8 +37,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
-
-import static com.mastercard.dis.mids.reference.constants.Constants.X_ENCRYPTED_HEADER;
 
 /**
  * This is ApiClient configuration, it will read properties from application.properties and create instance of ApiClient.
@@ -66,9 +63,29 @@ public class ApiClientConfiguration {
     @Value("${idp.userIdentifier}")
     private String userIdentifier;
 
-    //this header needs to be enabled to test encryption, use the same property for encryptionHeader
+    @Value("${mastercard.api.encryption.certificateFile:#{null}}")
+    private Resource encryptionCertificateFile;
+
+    @Value("${mastercard.api.consumer.key:#{null}}")
+    private String authConsumerKeyId;
+
+    @Value("${mastercard.api.encryption.fingerPrint:#{null}}")
+    private String encryptionCertificateFingerPrint;
+
+    @Value("${mastercard.api.decryption.keystore:#{null}}")
+    private Resource decryptionKeystore;
+
+    @Value("${mastercard.api.decryption.alias:#{null}}")
+    private String decryptionKeystoreAlias;
+
+    @Value("${mastercard.api.decryption.keystore.password:#{null}}")
+    private String decryptionKeystorePassword;
+
     @Value("${mastercard.client.encryption.enable:false}")
     private boolean encryptionEnabled;
+
+    @Value("${mastercard.client.decryption.enable:false}")
+    private boolean decryptionEnabled;
 
     @PostConstruct
     public void initialize() {
@@ -78,18 +95,16 @@ public class ApiClientConfiguration {
     }
 
     @Bean
-    public ApiClient apiClient(EncryptionDecryptionInterceptor encryptionDecryptionInterceptor) {
+    public ApiClient apiClient(EncryptionDecryptionInterceptor encryptionDecryptionInterceptor, AuthenticationInterceptor authenticationInterceptor) {
         ApiClient client = new ApiClient();
         try {
-            PrivateKey signingKey = getPrivateKeyFromP12(Paths.get(keyFile.getURI()), keystoreAlias, keystorePassword);
             client.setBasePath(basePath);
             client.setDebugging(true);
             client.setReadTimeout(40000);
-            client.addDefaultHeader(X_ENCRYPTED_HEADER, encryptionEnabled ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
 
             return client.setHttpClient(client.getHttpClient()
                     .newBuilder()
-                    .addInterceptor(new AuthenticationInterceptor(consumerKey, signingKey, userIdentifier))
+                    .addInterceptor(authenticationInterceptor)
                     .addInterceptor(encryptionDecryptionInterceptor)
                     .build()
             );
@@ -97,6 +112,17 @@ public class ApiClientConfiguration {
             log.error("Error occurred while configuring ApiClient", e);
             throw new ServiceException("Error occurred while configuring ApiClient", e);
         }
+    }
+
+    @Bean
+    public AuthenticationInterceptor authenticationInterceptor() throws IOException, UnrecoverableKeyException, CertificateException, KeyStoreException, NoSuchAlgorithmException {
+        PrivateKey signingKey = getPrivateKeyFromP12(Paths.get(keyFile.getURI()), keystoreAlias, keystorePassword);
+        return new AuthenticationInterceptor(consumerKey, signingKey, userIdentifier);
+    }
+
+    @Bean
+    public EncryptionDecryptionInterceptor encryptionDecryptionInterceptor(){
+        return new EncryptionDecryptionInterceptor(encryptionCertificateFile, encryptionCertificateFingerPrint, decryptionKeystore, decryptionKeystoreAlias, decryptionKeystorePassword, encryptionEnabled, decryptionEnabled);
     }
 
     private PrivateKey getPrivateKeyFromP12(Path pkcs12KeyFilePath,

@@ -63,10 +63,17 @@ public class IDPAuthorizationClientServiceImpl implements IDPAuthorizationClient
         try {
             IDPScopesAuthorization idpScopesAuthorizationRequestData = new IDPScopesAuthorization()
                     .claims(requestData.getClaims())
-                    .userConsent(requestData.getUserConsent());
+                    .userConsent(requestData.getUserConsent())
+                    .countryCode(requestData.getCountryCode())
+                    .locale(requestData.getLocale());
             return idpScopesFulfillmentApi.processClaimsRequestedScopes(arid, idpScopesAuthorizationRequestData, encryptedPayload);
         } catch (ApiException e) {
             throw exceptionUtil.logAndConvertToServiceException(e);
+        }catch (IllegalArgumentException e){
+            if(null != e.getMessage() && e.getMessage().contains("The field `encryptedData` in the JSON string is not defined in the `IDPScopesAuthorizationData` properties.")){
+                return null;
+            }
+            throw new IllegalArgumentException(e);
         }
     }
 
