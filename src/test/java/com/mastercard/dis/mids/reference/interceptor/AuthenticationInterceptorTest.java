@@ -26,8 +26,7 @@ import static org.mockito.Mockito.doReturn;
 class AuthenticationInterceptorTest {
 
     @InjectMocks
-    private  AuthenticationInterceptor authenticationInterceptor;
-
+    private AuthenticationInterceptor authenticationInterceptor;
 
     private  String userIdentifier = "123456789";
 
@@ -35,7 +34,6 @@ class AuthenticationInterceptorTest {
 
     @Mock
     private  PrivateKey signingKey ;
-
 
     @Mock
     Interceptor.Chain chain  ;
@@ -50,7 +48,6 @@ class AuthenticationInterceptorTest {
         ReflectionTestUtils.setField(authenticationInterceptor, "userIdentifier", userIdentifier);
         ReflectionTestUtils.setField(authenticationInterceptor, "signingKey", signingKey);
     }
-
 
     @Test
     void intercept_ok() throws IOException , ServiceException{
