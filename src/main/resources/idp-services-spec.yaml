@@ -1,0 +1,481 @@
+openapi: 3.0.3
+info:
+  version: '1.0'
+  title:  Mastercard Id For Identity Providers API
+  description: >-
+    ID for Identity Providers offers operational service to allow the secure storage and transmission of Digital Identity data from the user to the Relying Party having been verified to a required level of assurance by an Identity Verification Provider.
+  contact:
+    name: API Support
+    url: 'https://developer.mastercard.com/support'
+    email: apisupport@mastercard.com
+servers:
+  - url: 'https://api.mastercard.com.au/mids-idp'
+    description: Production server (uses live data).
+  - url: 'https://sandbox.api.mastercard.com.au/mids-idp'
+    description: Sandbox server (testing environment).
+tags:
+  - name: IDP Scopes Request
+    description: IDP RP claim sharing related operations.
+  - name: IDP Scopes Fulfillment
+    description: Claims sharing related to RP request scopes.
+  - name: IDP Claim Share Insights
+    description: Send user interactions with the IDP Claim Share API to MIDs.
+paths:
+  '/scopes/{arid}':
+    get:
+      summary: >-
+        To retrieve the scopes and RP details associated with the arid. The
+        ARID must be in PENDING status.
+      tags:
+        - IDP Scopes Request
+      responses:
+        '200':
+          $ref: '#/components/responses/RPScopesSuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      description: |
+        To retrieve the requested scopes and RP details associated with the ARID.   
+        **This API is mandatory.**
+      operationId: retrieveRPScopes
+      parameters:
+        - $ref: '#/components/parameters/AridParameter'
+  '/scope-fulfillments/{arid}':
+    put:
+      parameters:
+        - $ref: '#/components/parameters/AridParameter'
+        - $ref: '#/components/parameters/XEncryptedPayload'
+      tags:
+        - IDP Scopes Fulfillment
+      responses:
+        '200':
+          $ref: '#/components/responses/ScopeFulfillmentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+      description: |
+        Process claims data  provided by the IDP for the corresponding RP authentication.   
+        Request scopes and update the authentication request.   
+         **This API is mandatory.**
+      summary: >-
+        To process the IDP claims and update the authentication request with the claims data. The Relying
+        party can get these claims data via RP claim sharing endpoint.
+      operationId: ProcessClaimsRequestedScopes
+      requestBody:
+        $ref: '#/components/requestBodies/ScopeFulfillmentRequest'
+  '/claim-share-insights/{arid}':
+    post:
+      summary: >-
+        To send user interaction data to MIDs so MIDs and RPs have insight into the usage of the Claim Share API.
+      parameters:
+        - $ref: '#/components/parameters/AridParameter'
+      tags:
+        - IDP Claim Share Insights
+      responses:
+        '201':
+          $ref: '#/components/responses/IDPClaimShareInsightsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      operationId: processClaimShareInsights
+      description: >-
+        To give insights on user interaction with the Claim Share API to MIDs and RPs.
+      requestBody:
+        $ref: '#/components/requestBodies/IDPClaimShareInsightsRequest'
+components:
+  requestBodies:
+    ScopeFulfillmentRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IDPScopesAuthorization'
+          examples:
+            ScopeFulfillmentRequestUnencryptedExample:
+              $ref: '#/components/examples/IDPScopesAuthorizationRequestExample'
+            ScopeFulfillmentRequestEncryptedExample:
+              $ref: '#/components/examples/EncryptedPayloadNoPDSExample'
+      required: true
+    IDPClaimShareInsightsRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IDPClaimShareInsights'
+      required: true
+  parameters:
+    AridParameter:
+      name: arid
+      in: path
+      description: UUID represents the ARID.
+      example: df52649e-4096-456a-bca0-751ee470009f
+      required: true
+      schema:
+        maxLength: 36
+        minLength: 36
+        type: string
+        pattern: >-
+          ^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$
+    XEncryptedPayload:
+      in: header
+      name: X-Encrypted-Payload
+      example: true
+      description: |
+        Indicator that request is encrypted or to indicate that client is able to receive a encrypted response. If not set, payload will treated as plaintext.
+      schema:
+        type: boolean
+  responses:
+    RPScopesSuccessResponse:
+      description: Success response.
+      headers:
+        X-Transaction-ID:
+          $ref: '#/components/headers/X-Transaction-ID'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RPScopes'
+    ScopeFulfillmentResponse:
+      description: Success response.
+      headers:
+        X-Transaction-ID:
+          $ref: '#/components/headers/X-Transaction-ID'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IDPScopesAuthorizationData'
+          examples:
+            ScopeFulfillmentResponseUnencryptedExample:
+              $ref: '#/components/examples/IDPScopesAuthorizationDataResponseExample'
+            ScopeFulfillmentResponseEncryptedExample:
+              $ref: '#/components/examples/EncryptedPayloadNoPDSExample'
+
+    BadRequestError:
+      description: The server cannot process the request due to bad request. client should consider correcting the request before retrying again.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorWrapper'
+          examples:
+            BadRequestClaimsEmptyExample:
+              $ref: '#/components/examples/BadRequestClaimsEmptyExample'
+            BadRequestInvalidFormatExample:
+              $ref: '#/components/examples/BadRequestInvalidFormatExample'
+            BadRequestInvalidClaimsExample:
+              $ref: '#/components/examples/BadRequestInvalidClaimsExample'
+    UnauthorizedError:
+      description: Unauthorized request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorWrapper'
+          examples:
+            UnauthorizedExample:
+              $ref: '#/components/examples/UnauthorizedExample'
+    NotFoundError:
+      description: The target resource has not been found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorWrapper'
+          examples:
+            NotFoundExample:
+              $ref: '#/components/examples/NotFoundExample'
+    IDPClaimShareInsightsResponse:
+      description: Success.
+      headers:
+        X-Transaction-ID:
+          $ref: '#/components/headers/X-Transaction-ID'
+  schemas:
+    RPScopes:
+      required:
+        - scopes
+        - rpName
+        - rpLogoUrl
+      type: object
+      properties:
+        scopes:
+          type: array
+          items:
+            type: string
+            example: 'name:0:365'
+            description: The list of scopes that have been requested.
+        rpName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: THISRP
+          description: RP Name
+          pattern: '^[a-zA-Z\s ,.''‘’-]{1,255}$'
+        rpLogoUrl:
+          type: string
+          pattern: >-
+            ^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$
+          description: The URL of the logo of the RP.
+          example: 'https://www.rpsite.com/logo.jpg'
+    IDPScopesAuthorization:
+      required:
+        - claims
+        - userConsent
+      type: object
+      properties:
+        claims:
+          description: Claims for RP requested scopes.
+          type: array
+          items:
+            $ref: '#/components/schemas/IDPClaim'
+          example:
+            - claim: 'address:0:250'
+              values:
+                - name: address
+                  value: 2102 North Square Blvd
+            - claim: 'govtId:0:100'
+              values:
+                - name: firstName
+                  value: abc
+                - name: lastName
+                  value: xyz
+                - name: dateOfBirth
+                  value: '1990-12-12'
+          minItems: 1
+        userConsent:
+          maxLength: 8
+          minLength: 6
+          enum:
+            - ACCEPT
+            - DECLINE
+            - REVOKE
+            - EXPIRE
+          type: string
+          example: ACCEPT
+          description: >-
+            Attribute used to signify the user consent. If consent is other than 'ACCEPT' redirect url will be provided
+            with the error details.
+        locale:
+          type: string
+          example: en-US
+          pattern: '^[a-z]{2}-[a-zA-Z]{2}$'
+          description: 'IETF BCP 47 Format E.g. "en-GB" (English - United Kingdom), "es-MX" (Spanish - Mexico). More information: Locale ID (LCID) as defined by Microsoft. Not required. The default value is "en-US".'
+        countryCode:
+          description: ISO-3166 Alpha-2 standard.
+          type: string
+          example: US
+          pattern: '^[a-zA-Z]{2}$'
+    IDPClaim:
+      required:
+        - claim
+        - values
+      type: object
+      properties:
+        claim:
+          maxLength: 255
+          minLength: 1
+          description: A unique claim name particular to a scope requested by the relying party.
+          type: string
+          example: 'address:0:250'
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/IDPIndividualClaim'
+          description: List of values particular to a scope requested by the relying party.
+          minItems: 1
+    IDPIndividualClaim:
+      required:
+        - name
+        - value
+      type: object
+      properties:
+        name:
+          maxLength: 255
+          minLength: 1
+          description: A single claim name.
+          type: string
+          example: 'address'
+        value:
+          maxLength: 255
+          minLength: 1
+          description: The claim value.
+          type: string
+          example: 2102 North Square Blvd.
+    IDPScopesAuthorizationData:
+      required:
+        - redirectUri
+      type: object
+      properties:
+        redirectUri:
+          description: URL where IDP would redirect authorization response to be consumed by relying party
+          type: string
+          pattern: >-
+            ^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$
+          example: 'http://rp.com/auth?code=xcxxzaas3&state=xccx234'
+    ApiErrorWrapper:
+      required:
+        - Errors
+      type: object
+      properties:
+        Errors:
+          $ref: '#/components/schemas/ApiErrors'
+    ApiErrors:
+      description: List of errors.
+      example:
+        $ref: '#/components/examples/NotFoundExample'
+      required:
+        - Error
+      type: object
+      properties:
+        Error:
+          $ref: '#/components/schemas/ApiErrorList'
+    ApiErrorList:
+      description: Error Details.
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/ApiError'
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type: string
+          description: Source of where the error occurred.
+          minLength: 3
+          maxLength: 50
+          example: mids
+        ReasonCode:
+          type: string
+          description: Code of the error.
+          minLength: 5
+          maxLength: 100
+          example: BAD_REQUEST
+        Description:
+          type: string
+          description: The cause of the error.
+          minLength: 10
+          maxLength: 250
+          example: Claims in the request are empty
+        Recoverable:
+          type: boolean
+          description: Indicates if the error can be recovered from.
+          example: false
+        Details:
+          type: string
+          description: Contains information about the error.
+          minLength: 10
+          maxLength: 1000
+          example:  IOException Occurred
+    IDPClaimShareInsights:
+      type: object
+      required:
+        - claimShareDuration
+        - deviceMake
+        - userActivity
+        - userActivityOutcome
+      properties:
+        claimShareDuration:
+          description: The length of the claim sharing journey in seconds.
+          type: integer
+          maximum: 900
+          example: 30
+        deviceMake:
+          description: Device type descriptor.
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: SGH-N045
+        userActivity:
+          description: The type of the user activity.
+          type: string
+          example: NEW_ID_ENROLLED
+          pattern: '^NEW_ID_ENROLLED|NEW_ID_ENROLLED_AND_ADDITIONAL_ATTRIBUTES_ADDED|EXISTING_ID_REUSED|EXISTING_ID_REUSED_AND_ATTRIBUTES_ADDED|EXISTING_ID_REUSED_AND_ATTRIBUTES_ADDED$'
+        userActivityOutcome:
+          description: A description of the results of the user activity.
+          type: object
+          required:
+            - outcome
+          properties:
+            outcome:
+              description: The result of the user activity.
+              type: string
+              example: ABANDONED_BY_USER
+              pattern: '^SUCCESSFUL|DECLINED_BY_USER|ABANDONED_BY_USER|TERMINATED_DUE_TO_ERROR|DECLINED_BY_SYSTEM_OTHER|DECLINED_BY_SYSTEM_FRAUD$'
+            reason:
+              description: A description of the outcome field.
+              type: string
+              example: SUSPICIOUS_DATA
+              pattern: '^SUSPICIOUS_DEVICE|SUSPICIOUS_NETWORK|SUSPICIOUS_DATA|SUSPICIOUS_USER|UNDETERMINED_LIVENESS|BIOMETRIC_MATCH_FAILURE|OTHER$'
+  headers:
+    X-Transaction-ID:
+      schema:
+        type: string
+      description: A random 128-bit UUID represents the transaction.
+  examples:
+    EncryptedPayloadNoPDSExample:
+      value:
+        claims: 'address:0:250'
+        redirectUri: 'https://rplogo.url.com'
+        userConsent: ACCEPT
+        encryptedData: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyf
+    BadRequestClaimsEmptyExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: BAD_REQUEST
+              Description: Claims in the request are empty.
+              Recoverable: false
+    BadRequestInvalidFormatExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: BAD_REQUEST
+              Description: Claims in the request are empty.
+              Recoverable: false
+              Details: Invalid Date format. Valid format expected is 'YYYY-MM-DD'
+    BadRequestInvalidClaimsExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: INVALID_CLAIMS
+              Description: Provided claims are invalid.
+              Recoverable: false
+              Details: Claims are invalid. System defined claims for a mandatory scope 'ageOver' can't be empty
+    UnauthorizedExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: UNAUTHORIZED_REQUEST
+              Description: Unauthorized request.
+              Recoverable: false
+    NotFoundExample:
+      value:
+        Errors:
+          Error:
+            - Source: mids
+              ReasonCode: CLAIM_SHARING_ARID_DOES_NOT_EXIST
+              Description: ARID does not exist.
+              Recoverable: false
+    IDPScopesAuthorizationRequestExample:
+      value:
+        claims:
+          - claim: address:0:250
+            values:
+              - name: address
+                value: 2102 North Square Blvd
+          - claim: govtId:0:100
+            values:
+              - name: firstName
+                value: abc
+              - name: lastName
+                value: xyz
+              - name: dateOfBirth
+                value: '1990-12-12'
+        userConsent: ACCEPT
+        locale: en-US
+        countryCode: US
+    IDPScopesAuthorizationDataResponseExample:
+      value:
+        redirectUri: http://rp.com/auth?code=xcxxzaas3&state=xccx234
