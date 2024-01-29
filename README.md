@@ -174,7 +174,7 @@ Guides and tutorials can be found [here](https://developer.mastercard.com/master
           - 0 Exit
           - 1 RP Scopes
           - 2 Scope-fulfillments
-          - 4 Share Insight
+          - 3 Share Insight
         - The option 1 and 2 are going to ask for the ARID value in case you press enter the ARID value used is going to be the one found at the `application.properties` file. 
 
 ## API Reference <a name="api-reference"></a>
