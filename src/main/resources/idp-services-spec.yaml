@@ -18,6 +18,8 @@ tags:
     description: IDP RP claim sharing related operations.
   - name: IDP Scopes Fulfillment
     description: Claims sharing related to RP request scopes.
+  - name: IDP Claim Share Insights
+    description: Send user interactions with the IDP Claim Share API to MIDs.
 paths:
   '/scopes/{arid}':
     get:
@@ -34,7 +36,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
       description: |
-        To retrieve the requested scopes and RP details associated with the ARID.   
+        To retrieve the requested scopes and RP details associated with the ARID.
         **This API is mandatory.**
       operationId: retrieveRPScopes
       parameters:
@@ -56,8 +58,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
       description: |
-        Process claims data  provided by the IDP for the corresponding RP authentication.   
-        Request scopes and update the authentication request.   
+        Process claims data  provided by the IDP for the corresponding RP authentication.
+        Request scopes and update the authentication request.
          **This API is mandatory.**
       summary: >-
         To process the IDP claims and update the authentication request with the claims data. The Relying
@@ -65,6 +67,26 @@ paths:
       operationId: ProcessClaimsRequestedScopes
       requestBody:
         $ref: '#/components/requestBodies/ScopeFulfillmentRequest'
+  '/claim-share-insights/{arid}':
+    post:
+      summary: >-
+        To send user interaction data to MIDs so MIDs and RPs have insight into the usage of the Claim Share API.
+      parameters:
+        - $ref: '#/components/parameters/AridParameter'
+      tags:
+        - IDP Claim Share Insights
+      responses:
+        '201':
+          $ref: '#/components/responses/IDPClaimShareInsightsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      operationId: processClaimShareInsights
+      description: >-
+        To give insights on user interaction with the Claim Share API to MIDs and RPs.
+      requestBody:
+        $ref: '#/components/requestBodies/IDPClaimShareInsightsRequest'
 components:
   requestBodies:
     ScopeFulfillmentRequest:
@@ -77,6 +99,12 @@ components:
               $ref: '#/components/examples/IDPScopesAuthorizationRequestExample'
             ScopeFulfillmentRequestEncryptedExample:
               $ref: '#/components/examples/EncryptedPayloadNoPDSExample'
+      required: true
+    IDPClaimShareInsightsRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IDPClaimShareInsights'
       required: true
   parameters:
     AridParameter:
@@ -101,23 +129,19 @@ components:
         type: boolean
   responses:
     RPScopesSuccessResponse:
-      description: Success request.
+      description: Success response.
       headers:
         X-Transaction-ID:
-          schema:
-            type: string
-          description: A random 128-bit UUID represents the transaction.
+          $ref: '#/components/headers/X-Transaction-ID'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/RPScopes'
     ScopeFulfillmentResponse:
-      description: Success request.
+      description: Success response.
       headers:
         X-Transaction-ID:
-          schema:
-            type: string
-          description: A random 128-bit UUID represents the transaction.
+          $ref: '#/components/headers/X-Transaction-ID'
       content:
         application/json:
           schema:
@@ -127,6 +151,7 @@ components:
               $ref: '#/components/examples/IDPScopesAuthorizationDataResponseExample'
             ScopeFulfillmentResponseEncryptedExample:
               $ref: '#/components/examples/EncryptedPayloadNoPDSExample'
+
     BadRequestError:
       description: The server cannot process the request due to bad request. client should consider correcting the request before retrying again.
       content:
@@ -158,6 +183,11 @@ components:
           examples:
             NotFoundExample:
               $ref: '#/components/examples/NotFoundExample'
+    IDPClaimShareInsightsResponse:
+      description: Success.
+      headers:
+        X-Transaction-ID:
+          $ref: '#/components/headers/X-Transaction-ID'
   schemas:
     RPScopes:
       required:
@@ -298,7 +328,7 @@ components:
         Error:
           $ref: '#/components/schemas/ApiErrorList'
     ApiErrorList:
-      description: Error details.
+      description: Error Details.
       type: array
       minItems: 1
       items:
@@ -308,7 +338,7 @@ components:
       properties:
         Source:
           type: string
-          description: Source of where the error occured.
+          description: Source of where the error occurred.
           minLength: 3
           maxLength: 50
           example: mids
@@ -326,17 +356,65 @@ components:
           example: Claims in the request are empty
         Recoverable:
           type: boolean
-          description: Indiciates if the error can be recovered from.
+          description: Indicates if the error can be recovered from.
           example: false
         Details:
           type: string
           description: Contains information about the error.
           minLength: 10
           maxLength: 1000
-          example:  IOException Occured
+          example:  IOException Occurred
+    IDPClaimShareInsights:
+      type: object
+      required:
+        - claimShareDuration
+        - deviceMake
+        - userActivity
+        - userActivityOutcome
+      properties:
+        claimShareDuration:
+          description: The length of the claim sharing journey in seconds.
+          type: integer
+          maximum: 900
+          example: 30
+        deviceMake:
+          description: Device type descriptor.
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: SGH-N045
+        userActivity:
+          description: The type of the user activity.
+          type: string
+          example: NEW_ID_ENROLLED
+          pattern: '^NEW_ID_ENROLLED|NEW_ID_ENROLLED_AND_ADDITIONAL_ATTRIBUTES_ADDED|EXISTING_ID_REUSED|EXISTING_ID_REUSED_AND_ATTRIBUTES_ADDED|EXISTING_ID_REUSED_AND_ATTRIBUTES_ADDED$'
+        userActivityOutcome:
+          description: A description of the results of the user activity.
+          type: object
+          required:
+            - outcome
+          properties:
+            outcome:
+              description: The result of the user activity.
+              type: string
+              example: ABANDONED_BY_USER
+              pattern: '^SUCCESSFUL|DECLINED_BY_USER|ABANDONED_BY_USER|TERMINATED_DUE_TO_ERROR|DECLINED_BY_SYSTEM_OTHER|DECLINED_BY_SYSTEM_FRAUD$'
+            reason:
+              description: A description of the outcome field.
+              type: string
+              example: SUSPICIOUS_DATA
+              pattern: '^SUSPICIOUS_DEVICE|SUSPICIOUS_NETWORK|SUSPICIOUS_DATA|SUSPICIOUS_USER|UNDETERMINED_LIVENESS|BIOMETRIC_MATCH_FAILURE|OTHER$'
+  headers:
+    X-Transaction-ID:
+      schema:
+        type: string
+      description: A random 128-bit UUID represents the transaction.
   examples:
     EncryptedPayloadNoPDSExample:
       value:
+        claims: 'address:0:250'
+        redirectUri: 'https://rplogo.url.com'
+        userConsent: ACCEPT
         encryptedData: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyf
     BadRequestClaimsEmptyExample:
       value:

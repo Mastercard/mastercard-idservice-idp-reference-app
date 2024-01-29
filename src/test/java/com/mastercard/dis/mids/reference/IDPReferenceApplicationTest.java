@@ -67,6 +67,7 @@ class IDPReferenceApplicationTest {
         MENU_MAP_TEST.put("0", "0)   Exit");
         MENU_MAP_TEST.put("1", "1)   RP Scopes");
         MENU_MAP_TEST.put("2", "2)   Scope-fulfillments");
+        MENU_MAP_TEST.put("3", "3)   Share Insights");
     }
 
     @Test
@@ -98,7 +99,6 @@ class IDPReferenceApplicationTest {
         SystemExitException exitException = assertThrows(SystemExitException.class, () ->
                 idpReferenceApplicationMock.run()
         );
-        //verify(idpReferenceApplicationMock, times(2)).run();
         assertEquals(0, exitException.getStatusCode());
     }
 
@@ -120,6 +120,7 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
+        assertThrows(IllegalStateException.class, ()-> scanner.hasNext());
     }
 
     @Test
@@ -142,6 +143,7 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
+        assertThrows(IllegalStateException.class, ()-> scanner.hasNext());
     }
 
     @Test
@@ -164,6 +166,7 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
+        assertThrows(IllegalStateException.class, ()-> scanner.hasNext());
     }
 
     @Test
@@ -187,6 +190,7 @@ class IDPReferenceApplicationTest {
                 idpReferenceApplicationMock.run()
         );
         assertEquals(0, exitException.getStatusCode());
+        assertThrows(IllegalStateException.class, ()-> scanner.hasNext());
     }
 
     private String getAridMock(){

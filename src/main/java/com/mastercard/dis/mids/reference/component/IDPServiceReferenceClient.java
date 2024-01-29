@@ -53,4 +53,12 @@ public class IDPServiceReferenceClient {
         idpScopesFulfillmentService.fillScopesFulfillment(arid, requestData, encryptedPayload);
     }
 
+    public void enableClaimInsights(String inputtedArid) {
+        idpScopesFulfillmentService.enableClaimShareInsight(inputtedArid);
+    }
+
+    public void enableClaimInsights() {
+        idpScopesFulfillmentService.enableClaimShareInsight(arid);
+    }
+
 }

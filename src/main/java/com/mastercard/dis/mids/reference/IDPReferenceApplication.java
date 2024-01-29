@@ -31,6 +31,7 @@ import static com.mastercard.dis.mids.reference.constants.Constants.UUID_REGEX;
 public class IDPReferenceApplication implements CommandLineRunner {
 
     private static final String ERROR = "Error : ";
+    public static final String TYPE_A_VALID_ARID_OR_PRESS_ENTER_TO_USE_THE_PROPERTIES_ONE = "---> Type a valid arid or press ENTER to use the properties one:";
     private final IDPServiceReferenceClient idpServiceReference;
     private final Scanner scanner;
     private boolean exit = false;
@@ -80,6 +81,10 @@ public class IDPReferenceApplication implements CommandLineRunner {
                 //scope fulfillment
                 postScopeFulfillment();
                 break;
+            case "3":
+                //ClaimShareInsights
+                enableClaimShareInsights();
+                break;
             default:
                 log.info("Invalid option!");
         }
@@ -88,7 +93,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
     void getRPScopes() {
         try {
             log.info("<<--- RetrieveRPScopes Started --->>");
-            log.info("---> Type a valid arid or press ENTER to use the properties one:");
+            log.info(TYPE_A_VALID_ARID_OR_PRESS_ENTER_TO_USE_THE_PROPERTIES_ONE);
             String inputtedArid = scanner.nextLine();
             if (UUID_REGEX.matcher(inputtedArid).matches()) {
                 log.info("<<--- RetrieveRPScopes Using typed arid --->>");
@@ -107,7 +112,7 @@ public class IDPReferenceApplication implements CommandLineRunner {
     void postScopeFulfillment() {
         try {
             log.info("<<--- ScopesFulfillment Started --->>");
-            log.info("---> Type a valid arid or press ENTER to use the properties one:");
+            log.info(TYPE_A_VALID_ARID_OR_PRESS_ENTER_TO_USE_THE_PROPERTIES_ONE);
             String inputtedArid = scanner.nextLine();
             if (UUID_REGEX.matcher(inputtedArid).matches()) {
                 log.info("<<--- ScopesFulfillment Using typed arid --->>");
@@ -120,6 +125,25 @@ public class IDPReferenceApplication implements CommandLineRunner {
         } catch (Exception e) {
             log.info(ERROR + e.getMessage());
             log.info("<<--- ScopesFulfillment Failed Ended --->>");
+        }
+    }
+
+    void enableClaimShareInsights(){
+        try {
+            log.info("<<--- ClaimShareInsights Started --->>");
+            log.info(TYPE_A_VALID_ARID_OR_PRESS_ENTER_TO_USE_THE_PROPERTIES_ONE);
+            String inputtedArid = scanner.nextLine();
+            if (Pattern.compile(UUID_REGEX).matcher(inputtedArid).matches()) {
+                log.info("<<--- ClaimShareInsights Using typed arid --->>");
+                idpServiceReference.enableClaimInsights(inputtedArid);
+            } else {
+                log.info("<<--- ClaimShareInsights Using properties' arid --->>");
+                idpServiceReference.enableClaimInsights();
+            }
+            log.info("<<--- ClaimShareInsights Successfully Ended --->>");
+        } catch (Exception e) {
+            log.info(ERROR + e.getMessage());
+            log.info("<<--- ClaimShareInsights Failed Ended --->>");
         }
     }
 

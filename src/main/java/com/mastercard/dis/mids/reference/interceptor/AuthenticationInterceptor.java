@@ -71,7 +71,8 @@ public class AuthenticationInterceptor implements Interceptor {
                 .notBeforeTime(now)
                 .build();
 
-        SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256)
+        SignedJWT signedJWT = new SignedJWT(
+                new JWSHeader.Builder(JWSAlgorithm.RS256)
                 .type(JOSEObjectType.JWT)
                 .contentType("JWS")
                 .keyID(this.consumerKey)
