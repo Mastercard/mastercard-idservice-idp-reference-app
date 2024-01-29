@@ -28,6 +28,7 @@ public class Menu {
         menuMap.put("0", "0)   Exit");
         menuMap.put("1", "1)   RP Scopes");
         menuMap.put("2", "2)   Scope-fulfillments");
+        menuMap.put("3", "3)   Share Insights");
     }
 
     public Map<String, String> get() {

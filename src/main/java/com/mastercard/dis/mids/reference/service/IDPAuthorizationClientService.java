@@ -28,4 +28,5 @@ public interface IDPAuthorizationClientService {
 
     RPScopes getRPScopes(String arid);
 
+    void enableClaimShareInsight(String arid);
 }

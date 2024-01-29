@@ -16,13 +16,16 @@ limitations under the License.
 
 package com.mastercard.dis.mids.reference.service.impl;
 
+import com.mastercard.dis.mids.reference.example.IDPClaimShareInsightsExample;
 import com.mastercard.dis.mids.reference.exception.ExceptionUtil;
 import com.mastercard.dis.mids.reference.service.IDPAuthorizationClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
+import org.openapitools.client.api.IdpClaimShareInsightsApi;
 import org.openapitools.client.api.IdpScopesFulfillmentApi;
 import org.openapitools.client.api.IdpScopesRequestApi;
+import org.openapitools.client.model.IDPClaimShareInsights;
 import org.openapitools.client.model.IDPScopesAuthorization;
 import org.openapitools.client.model.IDPScopesAuthorizationData;
 import org.openapitools.client.model.RPScopes;
@@ -35,12 +38,14 @@ public class IDPAuthorizationClientServiceImpl implements IDPAuthorizationClient
 
     private final IdpScopesRequestApi idpScopesRequestApi;
     private final IdpScopesFulfillmentApi idpScopesFulfillmentApi;
+    private final IdpClaimShareInsightsApi idpClaimShareInsightsApi;
     private final ExceptionUtil exceptionUtil;
 
     @Autowired
     public IDPAuthorizationClientServiceImpl(ApiClient apiClient, ExceptionUtil exceptionUtil) {
         idpScopesFulfillmentApi = new IdpScopesFulfillmentApi(apiClient);
         idpScopesRequestApi = new IdpScopesRequestApi(apiClient);
+        idpClaimShareInsightsApi = new IdpClaimShareInsightsApi(apiClient);
         this.exceptionUtil = exceptionUtil;
     }
 
@@ -60,6 +65,16 @@ public class IDPAuthorizationClientServiceImpl implements IDPAuthorizationClient
                     .claims(requestData.getClaims())
                     .userConsent(requestData.getUserConsent());
             return idpScopesFulfillmentApi.processClaimsRequestedScopes(arid, idpScopesAuthorizationRequestData, encryptedPayload);
+        } catch (ApiException e) {
+            throw exceptionUtil.logAndConvertToServiceException(e);
+        }
+    }
+
+    @Override
+    public void enableClaimShareInsight(String arid){
+        IDPClaimShareInsights idpClaimShareInsightEvents = IDPClaimShareInsightsExample.getIDPClaimShareInsightEvents();
+        try {
+            idpClaimShareInsightsApi.processClaimShareInsights(arid,idpClaimShareInsightEvents);
         } catch (ApiException e) {
             throw exceptionUtil.logAndConvertToServiceException(e);
         }
